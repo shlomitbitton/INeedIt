@@ -18,7 +18,7 @@ public class User {
     private String email;
 
     @OneToMany
-    private List<Needing> usersNeeds;
+    private List<NeedingEvent> usersNeeds;
 
 
 
