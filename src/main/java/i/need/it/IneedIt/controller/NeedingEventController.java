@@ -13,20 +13,29 @@ import java.util.List;
 @RestController
 public class NeedingEventController {
 
+    /*
+    create new needing event
+     */
 
-    @PostMapping(value="/newNeedingEvent")
+    @PostMapping(value="/createNewNeedingEvent")
     public @ResponseBody ResponseEntity<NeedingEventResponseDto> crateNeedingEvent(@RequestBody NeedingEventRequestDto needingEvent){
         return new ResponseEntity<NeedingEventResponseDto>(HttpStatus.OK);
     }
-
-    @GetMapping(value="/allNeeds")
-    public List<NeedingEventResponseDto> getAllNeedingEvent(@RequestParam NeedingEventRequestDto needingEvent){
+    /*
+        This endpoint present all the needs of a user
+    */
+    @GetMapping(value="/allNeeds/{userId}")
+    public List<NeedingEventResponseDto> getAllNeedingEvent(@RequestParam ("userId") Long userId){
         return new ArrayList<>();
     }
 
-    @PostMapping(value="/fulfilledNeedingEvent/{needingEventId}")
-    public @ResponseBody ResponseEntity<NeedingEventResponseDto> fulfilledNeedingEvent(@RequestParam Long needingEventId){
+    /*
+    Present a single needing event by event id
+     */
+    @GetMapping(value="/needingEvent/{needingEventId}")
+    public @ResponseBody ResponseEntity<NeedingEventResponseDto> fulfilledNeedingEvent(@RequestParam ("needingEventId") Long needingEventId){
         return new ResponseEntity<NeedingEventResponseDto>(HttpStatus.OK);
     }
+
 
 }

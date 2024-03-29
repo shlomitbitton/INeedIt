@@ -11,6 +11,6 @@ public class NeedingEventService {
 
     public NeedingEvent createNewNeedingEvent(ItemNeeded itemNeeded){
         return NeedingEvent.builder()
-                .dateCreatedEvent(LocalDate.now()).itemNeeded(itemNeeded).daysInList(0).build();
+                .needingEventDateCreated(LocalDate.now()).daysListed(0).build();
     }
 }

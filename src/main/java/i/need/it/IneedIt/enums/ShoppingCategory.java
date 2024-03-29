@@ -1,6 +1,6 @@
 package i.need.it.IneedIt.enums;
 
-public enum ShoppingCategoryName {
+public enum ShoppingCategory {
 
     FOOD,
     APPAREL,
