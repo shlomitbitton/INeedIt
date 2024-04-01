@@ -2,38 +2,48 @@ package i.need.it.IneedIt.controller;
 
 import i.need.it.IneedIt.dto.NeedingEventRequestDto;
 import i.need.it.IneedIt.dto.NeedingEventResponseDto;
+import i.need.it.IneedIt.service.NeedingEventService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
-
+@Slf4j
 @RestController
 public class NeedingEventController {
+
+    private final NeedingEventService needingEventService;
+
+    public NeedingEventController(NeedingEventService needingEventService) {
+        this.needingEventService = needingEventService;
+    }
+
+
 
     /*
     create new needing event
      */
 
     @PostMapping(value="/createNewNeedingEvent")
-    public @ResponseBody ResponseEntity<NeedingEventResponseDto> crateNeedingEvent(@RequestBody NeedingEventRequestDto needingEvent){
-        return new ResponseEntity<NeedingEventResponseDto>(HttpStatus.OK);
+    public @ResponseBody NeedingEventResponseDto crateNeedingEvent(@RequestBody NeedingEventRequestDto needingEventDto){
+        log.info("User creating a new needing event");
+        return needingEventService.createNewNeedingEvent(needingEventDto);
     }
     /*
         This endpoint present all the needs of a user
     */
-    @GetMapping(value="/allNeeds/{userId}")
-    public List<NeedingEventResponseDto> getAllNeedingEvent(@RequestParam ("userId") Long userId){
-        return new ArrayList<>();
+    @GetMapping(value="/allUserNeeds")
+    public List<NeedingEventResponseDto> getAllNeedingEvent(@RequestParam(value = "userId") String userId){
+        return needingEventService.getUserNeedingEvents(Long.valueOf(userId));
     }
 
     /*
     Present a single needing event by event id
      */
-    @GetMapping(value="/needingEvent/{needingEventId}")
-    public @ResponseBody ResponseEntity<NeedingEventResponseDto> fulfilledNeedingEvent(@RequestParam ("needingEventId") Long needingEventId){
+    @GetMapping(value="/needingEvent")
+    public @ResponseBody ResponseEntity<NeedingEventResponseDto> fulfilledNeedingEvent(@RequestParam(value = "needingEventId") String needingEventId){
         return new ResponseEntity<NeedingEventResponseDto>(HttpStatus.OK);
     }
 

@@ -1,5 +1,7 @@
 package i.need.it.IneedIt.model;
 
+import i.need.it.IneedIt.enums.ItemNeeded;
+import i.need.it.IneedIt.enums.ShoppingCategory;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -22,8 +24,11 @@ public class NeedingEvent {
     @Column(name = "NEEDING_EVENT_ID")
     private long needingEventId;
 
-//    @Column(name = "ITEM_NEEDED")
-//    private ItemNeeded itemNeeded;
+    @Column(name = "ITEM_NEEDED")
+    private ItemNeeded itemNeeded;
+
+    @Column(name = "SHOPPING_CATEGORY")
+    private ShoppingCategory shoppingCategory;
 
     @Column(name = "NEEDING_EVENT_DATE")
     private LocalDate needingEventDateCreated;
