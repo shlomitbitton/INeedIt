@@ -15,12 +15,12 @@ public class Vendor {
     @Column(name = "VENDOR_ID")
     private long vendorId;
 
-    @Column(name = "VENDOR_NAME")
+    @Column(name = "vendor_name")
     private String vendorName;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "NEEDING_EVENT_ID")
-    private NeedingEvent needingEvent;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "needing_event_id")
+//    private NeedingEvent needingEvent;
 
 //    @ManyToOne
 //    @JoinColumn(name = "VEND")

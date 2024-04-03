@@ -15,5 +15,6 @@ public class NeedingEventRequestDto {
 
     private ItemNeeded itemNeeded;
     private ShoppingCategory shoppingCategory;
+    private long userId;
 
 }
