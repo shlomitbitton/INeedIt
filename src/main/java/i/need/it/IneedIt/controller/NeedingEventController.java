@@ -35,8 +35,13 @@ public class NeedingEventController {
         This endpoint present all the needs of a user
     */
     @GetMapping(value="/allUserNeeds")
-    public List<NeedingEventResponseDto> getAllNeedingEvent(@RequestParam(value = "userId") String userId){
-        return needingEventService.getUserNeedingEvents(Long.valueOf(userId));
+    public List<String> getAllUserNeedingEvent(@RequestParam(value = "userId") String userId){
+        return needingEventService.getUserNeedingEvents(userId);
+    }
+
+    @GetMapping(value="/allNeedingEvents")
+    public List<String> getAllNeedingEvent(){
+        return needingEventService.getAllNeedingEventsResponseDto();
     }
 
     /*
