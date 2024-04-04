@@ -1,0 +1,10 @@
+POST http://localhost:8080/createNewNeedingEvent
+Content-Type: application/json
+
+{
+  "itemNeeded": "Airpod Maxes",
+  "shoppingCategory": "ELECTRONICS",
+  "userId": 1,
+  "vendorName": "Apple"
+}
+

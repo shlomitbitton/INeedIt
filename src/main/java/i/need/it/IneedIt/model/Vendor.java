@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Entity
 @Getter
 @Setter
@@ -18,11 +20,10 @@ public class Vendor {
     @Column(name = "vendor_name")
     private String vendorName;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "needing_event_id")
-//    private NeedingEvent needingEvent;
+    @OneToMany(mappedBy = "vendor", cascade = CascadeType.ALL, fetch= FetchType.EAGER)
+    private List<NeedingEvent> vendorItems;
 
-//    @ManyToOne
-//    @JoinColumn(name = "VEND")
-//    private Vendor vendor;
+
+
+
 }

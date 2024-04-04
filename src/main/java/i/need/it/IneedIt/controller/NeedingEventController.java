@@ -2,6 +2,7 @@ package i.need.it.IneedIt.controller;
 
 import i.need.it.IneedIt.dto.NeedingEventRequestDto;
 import i.need.it.IneedIt.dto.NeedingEventResponseDto;
+import i.need.it.IneedIt.dto.VendorRequestDto;
 import i.need.it.IneedIt.service.NeedingEventService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -51,6 +52,11 @@ public class NeedingEventController {
     public @ResponseBody ResponseEntity<NeedingEventResponseDto> fulfilledNeedingEvent(@RequestParam(value = "needingEventId") String needingEventId){
         return new ResponseEntity<NeedingEventResponseDto>(HttpStatus.OK);
     }
+    @PostMapping(value = "/createNewVendor")
+    public ResponseEntity<HttpStatus> createNewVendor(@RequestBody VendorRequestDto vendorRequestDto){
+        return needingEventService.createNewVendor(vendorRequestDto);
+    }
+
 
 
 }
