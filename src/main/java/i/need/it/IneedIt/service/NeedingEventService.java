@@ -2,15 +2,20 @@ package i.need.it.IneedIt.service;
 
 import i.need.it.IneedIt.dto.NeedingEventRequestDto;
 import i.need.it.IneedIt.dto.NeedingEventResponseDto;
-import i.need.it.IneedIt.enums.ItemNeeded;
+import i.need.it.IneedIt.dto.VendorRequestDto;
 import i.need.it.IneedIt.enums.ShoppingCategory;
 import i.need.it.IneedIt.model.NeedingEvent;
 import i.need.it.IneedIt.model.User;
+import i.need.it.IneedIt.model.Vendor;
 import i.need.it.IneedIt.repository.NeedingEventRepository;
 import i.need.it.IneedIt.repository.UserRepository;
+import i.need.it.IneedIt.repository.VendorRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
+import javax.swing.text.html.Option;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -23,21 +28,32 @@ public class NeedingEventService {
     private final NeedingEventRepository needingEventRepository;
     private final UserRepository userRepository;
 
-    public NeedingEventService(NeedingEventRepository needingEventRepository, UserRepository userRepository) {
+    private final VendorRepository vendorRepository;
+
+    public NeedingEventService(NeedingEventRepository needingEventRepository, UserRepository userRepository, VendorRepository vendorRepository) {
         this.needingEventRepository = needingEventRepository;
         this.userRepository = userRepository;
+        this.vendorRepository = vendorRepository;
     }
 
     public NeedingEventResponseDto createNewNeedingEvent(NeedingEventRequestDto needingEventRequestDto){
         Optional<User> user = userRepository.findUserById(needingEventRequestDto.getUserId());
+        Optional<Vendor> vendor = vendorRepository.findVendorByVendorName(needingEventRequestDto.getVendorName());
         NeedingEvent needingEvent = new NeedingEvent();
         NeedingEventResponseDto needingEventResponseDto = new NeedingEventResponseDto();
         if(user.isPresent()) {
             needingEvent.setUser(user.get());//TODO: get from session
-            //        needingEvent.setPurchasingResource(new ArrayList<>());//TODO: Will be set automatically as options
             needingEvent.setNeedingEventDateCreated(LocalDate.now());
             needingEvent.setShoppingCategory(ShoppingCategory.valueOf(String.valueOf(needingEventRequestDto.getShoppingCategory())));
-            needingEvent.setItemNeeded(ItemNeeded.valueOf(String.valueOf(needingEventRequestDto.getItemNeeded())));
+            needingEvent.setItemNeeded(needingEventRequestDto.getItemNeeded());
+            if(!vendor.isPresent()){
+               VendorRequestDto newVendor = new VendorRequestDto();
+               newVendor.setVendorName(needingEventRequestDto.getVendorName());
+               createNewVendor(newVendor) ;
+               //TODO to fix
+            }
+            needingEvent.setVendor(vendor.get());
+
             needingEventRepository.save(needingEvent);
 
             needingEventResponseDto.setItemNeeded(needingEvent.getItemNeeded());
@@ -49,32 +65,24 @@ public class NeedingEventService {
         }
         return needingEventResponseDto;
     }
-       // return new ResponseEntity<NeedingEventResponseDto>(HttpStatus.OK);
 
     public List<String> getUserNeedingEvents(String userId){
         return needingEventRepository.streamAllItemsNeededByUserId(userId);
 
-/*
-        List<NeedingEvent> userNeedingEventList = needingEventRepository.findByUserId(userId);
-        if(!userNeedingEventList.isEmpty()) {
-            userNeedingEventList.stream().
-            List<NeedingEventResponseDto> listOfNeedingEventResponseDtoOfUser = new ArrayList<>();
-
-            NeedingEventResponseDto nerd = new NeedingEventResponseDto();
-
-            for (NeedingEvent ne : userNeedingEventList) {
-                log.info("ne: "+ ne.getNeedingEventId());
-                nerd.set.setNeedingEventId(ne.getNeedingEventId());
-                nerd.setItemName(ne.getItemNeeded().name());
-                listOfNeedingEventResponseDtoOfUser.add(nerd);
-            }
-            return listOfNeedingEventResponseDtoOfUser;
-        }
-       return new ArrayList<>();
-*/
     }
 
     public List<String> getAllNeedingEventsResponseDto(){
         return needingEventRepository.streamAllItemsNeededByUserId();
+    }
+
+    public ResponseEntity<HttpStatus> createNewVendor(VendorRequestDto vendorRequestDto){
+        Optional<Vendor> vendor = vendorRepository.findVendorByVendorName(vendorRequestDto.getVendorName());
+        if(vendor.isEmpty()){
+            Vendor newVendor = new Vendor();
+            newVendor.setVendorName(vendorRequestDto.getVendorName());
+            vendorRepository.save(newVendor);
+            return new ResponseEntity<>(HttpStatus.CREATED);
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
