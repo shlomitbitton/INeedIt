@@ -15,7 +15,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
-import javax.swing.text.html.Option;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -46,13 +45,14 @@ public class NeedingEventService {
             needingEvent.setNeedingEventDateCreated(LocalDate.now());
             needingEvent.setShoppingCategory(ShoppingCategory.valueOf(String.valueOf(needingEventRequestDto.getShoppingCategory())));
             needingEvent.setItemNeeded(needingEventRequestDto.getItemNeeded());
-            if(!vendor.isPresent()){
+            if(vendor.isPresent()) {
+                needingEvent.setVendor(vendor.get());
+            }else{//add vendor to the vendor table
                VendorRequestDto newVendor = new VendorRequestDto();
                newVendor.setVendorName(needingEventRequestDto.getVendorName());
-               createNewVendor(newVendor) ;
-               //TODO to fix
+               createNewVendor(newVendor);
+               needingEvent.setVendor(vendorRepository.findVendorByVendorName(needingEventRequestDto.getVendorName()).get());//now it should be there TODO: refactor the double call to the db
             }
-            needingEvent.setVendor(vendor.get());
 
             needingEventRepository.save(needingEvent);
 
@@ -85,4 +85,5 @@ public class NeedingEventService {
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
 }
