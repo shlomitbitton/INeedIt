@@ -9,8 +9,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 //this entity represent the needing event which includes the item product
-
-//this entity represent the needing event which includes the item product
 @Setter
 @Getter
 @NoArgsConstructor
@@ -27,16 +25,14 @@ public class NeedingEvent {
     private long needingEventId;
 
 
-
     @Column(name = "ITEM_NEEDED")
     private String itemNeeded;
 
+
     @Column(name = "SHOPPING_CATEGORY")
-    @Enumerated(EnumType.STRING)
     @Enumerated(EnumType.STRING)
     private ShoppingCategory shoppingCategory;
 
-    @Column(name = "NEEDING_EVENT_DATE_CREATED")
     @Column(name = "NEEDING_EVENT_DATE_CREATED")
     private LocalDate needingEventDateCreated;
 
@@ -47,9 +43,6 @@ public class NeedingEvent {
 //    @Column(name = "DAYS_LISTED" )
 //    private long daysListed; //how long do I have this item in the needing list
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "VENDOR_ID")
-    private Vendor vendor;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "VENDOR_ID")
     private Vendor vendor;
