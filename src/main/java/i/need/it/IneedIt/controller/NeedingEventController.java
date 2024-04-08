@@ -57,6 +57,11 @@ public class NeedingEventController {
         return needingEventService.createNewVendor(vendorRequestDto);
     }
 
+    @PostMapping(value = "/fullfilNeedingEvent")
+    public ResponseEntity<HttpStatus> fullFilNeedingEvent(@RequestParam(value = "needingEventId") String needingEventId){
+        log.info("Needing event status {} is being updated to Fulfill", needingEventId);
+        return needingEventService.updateNeedingEventStatus(needingEventId);
+    }
 
 
 }

@@ -1,5 +1,6 @@
 package i.need.it.IneedIt.model;
 
+import i.need.it.IneedIt.enums.NeedingEventStatus;
 import i.need.it.IneedIt.enums.ShoppingCategory;
 import jakarta.persistence.*;
 import lombok.*;
@@ -35,6 +36,10 @@ public class NeedingEvent {
     @Column(name = "NEEDING_EVENT_DATE_CREATED")
     private LocalDate needingEventDateCreated;
 
+    @Column(name = "NEEDING_EVENT_STATUS")
+    @Enumerated(EnumType.STRING)
+    private NeedingEventStatus needingEventStatus;
+
 //    @Column(name = "DAYS_LISTED" )
 //    private long daysListed; //how long do I have this item in the needing list
 
@@ -45,4 +50,6 @@ public class NeedingEvent {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "USER_ID")
     private User user;
+
+
 }
