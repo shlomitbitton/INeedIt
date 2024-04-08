@@ -2,6 +2,9 @@ package i.need.it.IneedIt.service;
 
 import i.need.it.IneedIt.dto.NeedingEventRequestDto;
 import i.need.it.IneedIt.dto.NeedingEventResponseDto;
+import i.need.it.IneedIt.dto.VendorRequestDto;
+import i.need.it.IneedIt.enums.NeedingEventStatus;
+import i.need.it.IneedIt.enums.ShoppingCategory;
 import i.need.it.IneedIt.model.NeedingEvent;
 import i.need.it.IneedIt.model.User;
 import i.need.it.IneedIt.repository.NeedingEventRepository;
@@ -19,7 +22,19 @@ public class NeedingEventService {
     private final NeedingEventRepository needingEventRepository;
     private UserRepository userRepository;
 
-    public NeedingEventService(NeedingEventRepository needingEventRepository) {
+    private final VendorRepository vendorRepository;
+
+
+    public ResponseEntity<HttpStatus> updateNeedingEventStatus(String needingEventId){
+        Optional<NeedingEvent> needingEventToUpdate = needingEventRepository.findById(Long.valueOf(needingEventId));
+        if(needingEventToUpdate.isPresent()){
+            needingEventToUpdate.get().setNeedingEventStatus(NeedingEventStatus.Fulfilled);
+            needingEventRepository.save(needingEventToUpdate.get());
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    public NeedingEventService(NeedingEventRepository needingEventRepository, UserRepository userRepository, VendorRepository vendorRepository) {
         this.needingEventRepository = needingEventRepository;
     }
 

@@ -1,6 +1,6 @@
 package i.need.it.IneedIt.model;
 
-import i.need.it.IneedIt.enums.ItemNeeded;
+import i.need.it.IneedIt.enums.NeedingEventStatus;
 import i.need.it.IneedIt.enums.ShoppingCategory;
 import jakarta.persistence.*;
 import lombok.*;
@@ -25,7 +25,7 @@ public class NeedingEvent {
     private long needingEventId;
 
     @Column(name = "ITEM_NEEDED")
-    private ItemNeeded itemNeeded;
+    private String itemNeeded;
 
     @Column(name = "SHOPPING_CATEGORY")
     private ShoppingCategory shoppingCategory;
@@ -33,8 +33,12 @@ public class NeedingEvent {
     @Column(name = "NEEDING_EVENT_DATE")
     private LocalDate needingEventDateCreated;
 
-    @Column(name = "DAYS_LISTED" )
-    private long daysListed; //how long do I have this item in the needing list
+    @Column(name = "NEEDING_EVENT_STATUS")
+    @Enumerated(EnumType.STRING)
+    private NeedingEventStatus needingEventStatus;
+
+//    @Column(name = "DAYS_LISTED" )
+//    private long daysListed; //how long do I have this item in the needing list
 
     @OneToMany(mappedBy = "needingEvent", cascade = CascadeType.ALL, fetch = FetchType.EAGER) //one item can be purchased from many vendors
     private List<Vendor> purchasingResource = new ArrayList<>();
@@ -42,4 +46,6 @@ public class NeedingEvent {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "USER_ID")
     private User user;
+
+
 }
