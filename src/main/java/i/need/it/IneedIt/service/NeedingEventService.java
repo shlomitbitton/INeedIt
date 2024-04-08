@@ -7,20 +7,28 @@ import i.need.it.IneedIt.enums.NeedingEventStatus;
 import i.need.it.IneedIt.enums.ShoppingCategory;
 import i.need.it.IneedIt.model.NeedingEvent;
 import i.need.it.IneedIt.model.User;
+import i.need.it.IneedIt.model.Vendor;
 import i.need.it.IneedIt.repository.NeedingEventRepository;
 import i.need.it.IneedIt.repository.UserRepository;
+import i.need.it.IneedIt.repository.VendorRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Optional;
+
 @Slf4j
 @Component
 public class NeedingEventService {
 
     private final NeedingEventRepository needingEventRepository;
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+
+    private final VendorRepository vendorRepository;
 
     private final VendorRepository vendorRepository;
 
@@ -36,43 +44,59 @@ public class NeedingEventService {
 
     public NeedingEventService(NeedingEventRepository needingEventRepository, UserRepository userRepository, VendorRepository vendorRepository) {
         this.needingEventRepository = needingEventRepository;
+        this.userRepository = userRepository;
+        this.vendorRepository = vendorRepository;
     }
 
     public NeedingEventResponseDto createNewNeedingEvent(NeedingEventRequestDto needingEventRequestDto){
-
+        Optional<User> user = userRepository.findUserById(needingEventRequestDto.getUserId());
+        Optional<Vendor> vendor = vendorRepository.findVendorByVendorName(needingEventRequestDto.getVendorName());
         NeedingEvent needingEvent = new NeedingEvent();
-        needingEvent.setUser(new User());//TODO: get from session
-        needingEvent.setDaysListed(1);
-        needingEvent.setPurchasingResource(new ArrayList<>());//TODO: Will be set automatically as options
-        needingEvent.setNeedingEventDateCreated(LocalDate.now());
-        needingEvent.setShoppingCategory(needingEventRequestDto.getShoppingCategory());
-        needingEvent.setItemNeeded(needingEventRequestDto.getItemNeeded());
-        needingEventRepository.save(needingEvent);
-
         NeedingEventResponseDto needingEventResponseDto = new NeedingEventResponseDto();
-        needingEventResponseDto.setItemName(String.valueOf(needingEvent.getItemNeeded()));
-        log.info("new Needing event has been created");
-//        ModelMapper modelMapper = new ModelMapper();
-//        modelMapper.map(needingEvent,needingEventResponseDto);
+        if(user.isPresent()) {
+            needingEvent.setUser(user.get());//TODO: get from session
+            needingEvent.setNeedingEventDateCreated(LocalDate.now());
+            needingEvent.setShoppingCategory(ShoppingCategory.valueOf(String.valueOf(needingEventRequestDto.getShoppingCategory())));
+            needingEvent.setItemNeeded(needingEventRequestDto.getItemNeeded());
+            if(vendor.isPresent()) {
+                needingEvent.setVendor(vendor.get());
+            }else{//add vendor to the vendor table
+               VendorRequestDto newVendor = new VendorRequestDto();
+               newVendor.setVendorName(needingEventRequestDto.getVendorName());
+               createNewVendor(newVendor);
+               needingEvent.setVendor(vendorRepository.findVendorByVendorName(needingEventRequestDto.getVendorName()).get());//now it should be there TODO: refactor the double call to the db
+            }
+
+            needingEventRepository.save(needingEvent);
+
+            needingEventResponseDto.setItemNeeded(needingEvent.getItemNeeded());
+            needingEventResponseDto.setShoppingCategory(needingEvent.getShoppingCategory());
+            needingEventResponseDto.setDaysListed(LocalDate.ofEpochDay(ChronoUnit.DAYS.between(LocalDate.now(), needingEvent.getNeedingEventDateCreated())));
+            needingEventResponseDto.setUserId(needingEvent.getUser().getId());
+            log.info("new Needing event has been created");
+
+        }
         return needingEventResponseDto;
     }
-       // return new ResponseEntity<NeedingEventResponseDto>(HttpStatus.OK);
 
-    public List<NeedingEventResponseDto> getUserNeedingEvents(long userId){
+    public List<String> getUserNeedingEvents(String userId){
+        return needingEventRepository.streamAllItemsNeededByUserId(userId);
 
-        List<NeedingEvent> userNeedingEventList = needingEventRepository.findByUserId(userId);
-        if(!userNeedingEventList.isEmpty()) {
-            List<NeedingEventResponseDto> listOfNeedingEventResponseDtoOfUser = new ArrayList<>();
-            NeedingEventResponseDto nerd = new NeedingEventResponseDto();
-
-            for (NeedingEvent ne : userNeedingEventList) {
-                log.info("ne: "+ ne.getNeedingEventId());
-                nerd.setNeedingEventId(ne.getNeedingEventId());
-                nerd.setItemName(ne.getItemNeeded().name());
-                listOfNeedingEventResponseDtoOfUser.add(nerd);
-            }
-            return listOfNeedingEventResponseDtoOfUser;
-        }
-       return new ArrayList<>();
     }
+
+    public List<String> getAllNeedingEventsResponseDto(){
+        return needingEventRepository.streamAllItemsNeededByUserId();
+    }
+
+    public ResponseEntity<HttpStatus> createNewVendor(VendorRequestDto vendorRequestDto){
+        Optional<Vendor> vendor = vendorRepository.findVendorByVendorName(vendorRequestDto.getVendorName());
+        if(vendor.isEmpty()){
+            Vendor newVendor = new Vendor();
+            newVendor.setVendorName(vendorRequestDto.getVendorName());
+            vendorRepository.save(newVendor);
+            return new ResponseEntity<>(HttpStatus.CREATED);
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
 }

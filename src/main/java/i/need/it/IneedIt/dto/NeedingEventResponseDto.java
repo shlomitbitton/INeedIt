@@ -1,6 +1,9 @@
 package i.need.it.IneedIt.dto;
 
+import i.need.it.IneedIt.enums.ShoppingCategory;
 import lombok.*;
+
+import java.time.LocalDate;
 
 @AllArgsConstructor
 @Getter
@@ -9,6 +12,10 @@ import lombok.*;
 @Builder
 public class NeedingEventResponseDto {
 
-    private long needingEventId;
-    private String itemName; //TODO: ItemNeeded name
+//    private long needingEventId;
+//    private String itemName; //TODO: ItemNeeded name
+    private String itemNeeded;
+    private ShoppingCategory shoppingCategory;
+    private long userId;
+    private LocalDate daysListed;
 }
