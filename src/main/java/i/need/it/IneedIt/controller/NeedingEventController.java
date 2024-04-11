@@ -3,6 +3,7 @@ package i.need.it.IneedIt.controller;
 import i.need.it.IneedIt.dto.NeedingEventRequestDto;
 import i.need.it.IneedIt.dto.NeedingEventResponseDto;
 import i.need.it.IneedIt.dto.VendorRequestDto;
+import i.need.it.IneedIt.model.NeedingEvent;
 import i.need.it.IneedIt.service.NeedingEventService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -10,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -45,22 +47,23 @@ public class NeedingEventController {
         return needingEventService.getAllNeedingEventsResponseDto();
     }
 
-    /*
-    Present a single needing event by event id
-     */
-    @GetMapping(value="/needingEvent")
-    public @ResponseBody ResponseEntity<NeedingEventResponseDto> fulfilledNeedingEvent(@RequestParam(value = "needingEventId") String needingEventId){
-        return new ResponseEntity<NeedingEventResponseDto>(HttpStatus.OK);
-    }
     @PostMapping(value = "/createNewVendor")
     public ResponseEntity<HttpStatus> createNewVendor(@RequestBody VendorRequestDto vendorRequestDto){
         return needingEventService.createNewVendor(vendorRequestDto);
     }
-
-    @PostMapping(value = "/fullfilNeedingEvent")
-    public ResponseEntity<HttpStatus> fullFilNeedingEvent(@RequestParam(value = "needingEventId") String needingEventId){
+    /*
+    updating needing event status
+     */
+    @PostMapping(value = "/fulfillNeedingEvent")
+    public ResponseEntity<HttpStatus> fulfillNeedingEvent(@RequestParam(value = "needingEventId") String needingEventId){
         log.info("Needing event status {} is being updated to Fulfill", needingEventId);
         return needingEventService.updateNeedingEventStatus(needingEventId);
+    }
+
+    @GetMapping(value = "/needingEvent")
+    public Optional<NeedingEvent> getNeedingEventById(@RequestParam(value = "needingEventId") String needingEventId){
+        log.info("Get needing event By Id");
+        return needingEventService.getNeedingEventById(needingEventId);
     }
 
 
