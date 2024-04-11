@@ -98,7 +98,13 @@ public class NeedingEventService {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    public Optional<NeedingEvent> getNeedingEventById(String needingEventId) {
-        return needingEventRepository.findById(Long.valueOf(needingEventId));
+    public ResponseEntity<HttpStatus> getNeedingEventById(String needingEventId) {
+        log.info("Getting event Id: {}",needingEventId);
+        Optional<NeedingEvent> needingEvent = needingEventRepository.findById(Long.valueOf(needingEventId));
+        if(needingEvent.isEmpty()){
+            //return a page wil a message event doesnt exist
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
+
     }
 }
