@@ -61,7 +61,7 @@ public class NeedingEventController {
     }
 
     @GetMapping(value = "/needingEvent")
-    public Optional<NeedingEvent> getNeedingEventById(@RequestParam(value = "needingEventId") String needingEventId){
+    public ResponseEntity<HttpStatus> getNeedingEventById(@RequestParam(value = "needingEventId") String needingEventId){
         log.info("Get needing event By Id");
         return needingEventService.getNeedingEventById(needingEventId);
     }
