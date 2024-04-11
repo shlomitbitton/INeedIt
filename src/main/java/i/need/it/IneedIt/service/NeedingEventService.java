@@ -98,4 +98,7 @@ public class NeedingEventService {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    public Optional<NeedingEvent> getNeedingEventById(String needingEventId) {
+        return needingEventRepository.findById(Long.valueOf(needingEventId));
+    }
 }
