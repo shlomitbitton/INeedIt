@@ -15,9 +15,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -68,10 +70,11 @@ public class NeedingEventService {
 
             needingEventRepository.save(needingEvent);
 
-            needingEventResponseDto.setItemNeeded(needingEvent.getItemNeeded());
-            needingEventResponseDto.setShoppingCategory(needingEvent.getShoppingCategory());
+            needingEventResponseDto.setItemNeededName(needingEvent.getItemNeeded());
+            needingEventResponseDto.setShoppingCategory(String.valueOf(needingEvent.getShoppingCategory()));
             needingEventResponseDto.setDaysListed(LocalDate.ofEpochDay(ChronoUnit.DAYS.between(LocalDate.now(), needingEvent.getNeedingEventDateCreated())));
-            needingEventResponseDto.setUserId(needingEvent.getUser().getId());
+            //needingEventResponseDto.setUserId(needingEvent.getUser().getId());
+            needingEventResponseDto.setNeedingEventStatus(String.valueOf(needingEvent.getNeedingEventStatus()));
             log.info("new Needing event has been created");
 
         }
@@ -98,13 +101,22 @@ public class NeedingEventService {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    public ResponseEntity<HttpStatus> getNeedingEventById(String needingEventId) {
+    @Transactional
+    public NeedingEventResponseDto getNeedingEventById(String needingEventId) {
+        NeedingEventResponseDto result = new NeedingEventResponseDto();
         log.info("Getting event Id: {}",needingEventId);
-        Optional<NeedingEvent> needingEvent = needingEventRepository.findById(Long.valueOf(needingEventId));
-        if(needingEvent.isEmpty()){
-            //return a page wil a message event doesnt exist
-        }
-        return new ResponseEntity<>(HttpStatus.OK);
+            Optional<NeedingEvent> needingEvent = needingEventRepository.findById(Long.valueOf(needingEventId));
+            if (needingEvent.isEmpty()) {
+                //return a page with a message of: event doesnt exist
+            } else {
+                return NeedingEventResponseDto.builder()
+                        .itemNeededName(needingEvent.get().getItemNeeded())
+                        .daysListed(LocalDate.ofEpochDay(ChronoUnit.DAYS.between(LocalDate.now(), needingEvent.get().getNeedingEventDateCreated())))
+                        .shoppingCategory(String.valueOf(needingEvent.get().getShoppingCategory()))
+                        .needingEventStatus(String.valueOf(needingEvent.get().getNeedingEventStatus()))
+                        .build();
 
+            }
+        return result;
     }
 }
