@@ -19,9 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -89,6 +87,7 @@ public class NeedingEventService {
             NeedingEventResponseDto nrdto = getNeedingEventById(String.valueOf(nepu.getNeedingEventId()));
             listOfNeedingEventDtoPerUser.add(nrdto);
         }
+        listOfNeedingEventDtoPerUser.sort(Comparator.comparing(NeedingEventResponseDto::getDaysListed));
         return listOfNeedingEventDtoPerUser;
     }
 
