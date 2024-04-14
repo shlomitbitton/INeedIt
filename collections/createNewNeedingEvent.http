@@ -2,9 +2,9 @@ POST http://localhost:8080/createNewNeedingEvent
 Content-Type: application/json
 
 {
-  "itemNeeded": "Airpod Maxes",
-  "shoppingCategory": "ELECTRONICS",
+  "itemNeeded": "Tortillias",
+  "shoppingCategory": "FOOD",
   "userId": 2,
-  "vendorName": "Apple"
+  "vendorName": "Briar Patch"
 }
 

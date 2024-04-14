@@ -22,6 +22,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -81,9 +82,14 @@ public class NeedingEventService {
         return needingEventResponseDto;
     }
 
-    public List<String> getUserNeedingEvents(String userId){
-        return needingEventRepository.streamAllItemsNeededByUserId(userId);
-
+    public List<NeedingEventResponseDto> getUserNeedingEvents(String userId){
+        List<NeedingEventResponseDto> listOfNeedingEventDtoPerUser = new ArrayList<>();
+        List<NeedingEvent> needingEventsPerUser =  needingEventRepository.findAll().stream().filter(user -> user.getUser().getId() == Long.parseLong(userId)).toList();
+        for(NeedingEvent nepu : needingEventsPerUser){
+            NeedingEventResponseDto nrdto = getNeedingEventById(String.valueOf(nepu.getNeedingEventId()));
+            listOfNeedingEventDtoPerUser.add(nrdto);
+        }
+        return listOfNeedingEventDtoPerUser;
     }
 
     public List<String> getAllNeedingEventsResponseDto(){
@@ -101,7 +107,7 @@ public class NeedingEventService {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @Transactional
+//    @Transactional
     public NeedingEventResponseDto getNeedingEventById(String needingEventId) {
         NeedingEventResponseDto result = new NeedingEventResponseDto();
         log.info("Getting event Id: {}",needingEventId);
