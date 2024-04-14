@@ -72,7 +72,7 @@ public class NeedingEventService {
 
             needingEventResponseDto.setItemNeededName(needingEvent.getItemNeeded());
             needingEventResponseDto.setShoppingCategory(String.valueOf(needingEvent.getShoppingCategory()));
-            needingEventResponseDto.setDaysListed(LocalDate.ofEpochDay(ChronoUnit.DAYS.between(LocalDate.now(), needingEvent.getNeedingEventDateCreated())));
+            needingEventResponseDto.setDaysListed(ChronoUnit.DAYS.between(LocalDate.now(), needingEvent.getNeedingEventDateCreated()));
             //needingEventResponseDto.setUserId(needingEvent.getUser().getId());
             needingEventResponseDto.setNeedingEventStatus(String.valueOf(needingEvent.getNeedingEventStatus()));
             log.info("new Needing event has been created");
@@ -111,7 +111,7 @@ public class NeedingEventService {
             } else {
                 return NeedingEventResponseDto.builder()
                         .itemNeededName(needingEvent.get().getItemNeeded())
-                        .daysListed(LocalDate.ofEpochDay(ChronoUnit.DAYS.between(LocalDate.now(), needingEvent.get().getNeedingEventDateCreated())))
+                        .daysListed(ChronoUnit.DAYS.between(needingEvent.get().getNeedingEventDateCreated(),LocalDate.now()))
                         .shoppingCategory(String.valueOf(needingEvent.get().getShoppingCategory()))
                         .needingEventStatus(String.valueOf(needingEvent.get().getNeedingEventStatus()))
                         .build();

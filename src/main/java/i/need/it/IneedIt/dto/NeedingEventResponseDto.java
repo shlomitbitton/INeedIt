@@ -13,6 +13,6 @@ public class NeedingEventResponseDto {
 
     private String itemNeededName;
     private String shoppingCategory;
-    private LocalDate daysListed;
+    private long daysListed;
     private String needingEventStatus;
 }
