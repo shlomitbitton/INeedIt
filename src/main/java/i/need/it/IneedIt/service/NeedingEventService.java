@@ -15,12 +15,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -71,13 +69,17 @@ public class NeedingEventService {
 
             needingEventResponseDto.setItemNeededName(needingEvent.getItemNeeded());
             needingEventResponseDto.setShoppingCategory(String.valueOf(needingEvent.getShoppingCategory()));
-            needingEventResponseDto.setDaysListed(ChronoUnit.DAYS.between(LocalDate.now(), needingEvent.getNeedingEventDateCreated()));
+            needingEventResponseDto.setDaysListed(getDaysListed(needingEvent.getNeedingEventDateCreated()));
             //needingEventResponseDto.setUserId(needingEvent.getUser().getId());
             needingEventResponseDto.setNeedingEventStatus(String.valueOf(needingEvent.getNeedingEventStatus()));
             log.info("new Needing event has been created");
 
         }
         return needingEventResponseDto;
+    }
+
+    private long getDaysListed(LocalDate dateCreated){
+        return ChronoUnit.DAYS.between(dateCreated, LocalDate.now())+1;
     }
 
     public List<NeedingEventResponseDto> getUserNeedingEvents(String userId){
@@ -116,7 +118,7 @@ public class NeedingEventService {
             } else {
                 return NeedingEventResponseDto.builder()
                         .itemNeededName(needingEvent.get().getItemNeeded())
-                        .daysListed(ChronoUnit.DAYS.between(needingEvent.get().getNeedingEventDateCreated(),LocalDate.now()))
+                        .daysListed(getDaysListed(needingEvent.get().getNeedingEventDateCreated()))
                         .shoppingCategory(String.valueOf(needingEvent.get().getShoppingCategory()))
                         .needingEventStatus(String.valueOf(needingEvent.get().getNeedingEventStatus()))
                         .build();
