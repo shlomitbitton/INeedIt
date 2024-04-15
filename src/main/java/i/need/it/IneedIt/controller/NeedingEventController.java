@@ -53,9 +53,8 @@ public class NeedingEventController {
     /*
     updating needing event status
      */
-    @PostMapping(value = "/fulfillNeedingEvent")
-    public ResponseEntity<HttpStatus> fulfillNeedingEvent(@RequestParam(value = "needingEventId") String needingEventId){
-        log.info("Needing event status {} is being updated to Fulfill", needingEventId);
+    @PostMapping(value = "/updateNeedingEventStatus")
+    public ResponseEntity<HttpStatus> updateNeedingEventStatus(@RequestParam(value = "needingEventId") String needingEventId){
         return needingEventService.updateNeedingEventStatus(needingEventId);
     }
 

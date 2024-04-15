@@ -33,10 +33,16 @@ public class NeedingEventService {
     public ResponseEntity<HttpStatus> updateNeedingEventStatus(String needingEventId){
         Optional<NeedingEvent> needingEventToUpdate = needingEventRepository.findById(Long.valueOf(needingEventId));
         if(needingEventToUpdate.isPresent()){
-            needingEventToUpdate.get().setNeedingEventStatus(NeedingEventStatus.Fulfilled);
+            if(needingEventToUpdate.get().getNeedingEventStatus().equals(NeedingEventStatus.Need)){
+                needingEventToUpdate.get().setNeedingEventStatus(NeedingEventStatus.Fulfilled);
+            }else{
+                needingEventToUpdate.get().setNeedingEventStatus(NeedingEventStatus.Need);
+                needingEventToUpdate.get().setNeedingEventDateCreated(LocalDate.now());//zero out the date created
+            }
+            log.info("Needing event status {} has updated to {}", needingEventId, needingEventToUpdate.get().getNeedingEventStatus());
             needingEventRepository.save(needingEventToUpdate.get());
         }
-        return new ResponseEntity<>(HttpStatus.OK);
+        return ResponseEntity.ok().build();
     }
 
     public NeedingEventService(NeedingEventRepository needingEventRepository, UserRepository userRepository, VendorRepository vendorRepository) {
@@ -121,6 +127,7 @@ public class NeedingEventService {
                         .daysListed(getDaysListed(needingEvent.get().getNeedingEventDateCreated()))
                         .shoppingCategory(String.valueOf(needingEvent.get().getShoppingCategory()))
                         .needingEventStatus(String.valueOf(needingEvent.get().getNeedingEventStatus()))
+                        .needingEventId(needingEvent.get().getNeedingEventId())
                         .build();
 
             }

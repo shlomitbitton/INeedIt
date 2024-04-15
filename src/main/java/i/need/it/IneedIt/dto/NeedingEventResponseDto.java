@@ -15,4 +15,5 @@ public class NeedingEventResponseDto {
     private String shoppingCategory;
     private long daysListed;
     private String needingEventStatus;
+    private long needingEventId;
 }
