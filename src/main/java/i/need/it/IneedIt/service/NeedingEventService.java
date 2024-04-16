@@ -57,32 +57,42 @@ public class NeedingEventService {
         NeedingEvent needingEvent = new NeedingEvent();
         NeedingEventResponseDto needingEventResponseDto = new NeedingEventResponseDto();
         if(user.isPresent()) {
-            needingEvent.setUser(user.get());//TODO: get from session
-            needingEvent.setNeedingEventDateCreated(LocalDate.now());
-            needingEvent.setShoppingCategory(ShoppingCategory.valueOf(String.valueOf(needingEventRequestDto.getShoppingCategory())));
-            needingEvent.setItemNeeded(needingEventRequestDto.getItemNeeded());
-            needingEvent.setNeedingEventStatus(NeedingEventStatus.Need);
-            if(vendor.isPresent()) {
-                needingEvent.setVendor(vendor.get());
-            }else{//add vendor to the vendor table
-               VendorRequestDto newVendor = new VendorRequestDto();
-               newVendor.setVendorName(needingEventRequestDto.getVendorName());
-               createNewVendor(newVendor);
-               needingEvent.setVendor(vendorRepository.findVendorByVendorName(needingEventRequestDto.getVendorName()).get());//now it should be there TODO: refactor the double call to the db
+            List<NeedingEventResponseDto> userExistingNeedingEvent = getUserNeedingEvents(String.valueOf(user.get().getId()));
+            if(userExistingNeedingEvent.stream().anyMatch(itemNeeded -> itemNeeded.getItemNeededName().equals(needingEventRequestDto.getItemNeeded()))){
+                //change only the status and reset date created.
+                long needingEventId = userExistingNeedingEvent.stream().filter(itemNeeded -> itemNeeded.getItemNeededName().equals(needingEventRequestDto.getItemNeeded())).findFirst().get().getNeedingEventId();
+                needingEvent = needingEventRepository.findById(needingEventId).get();
+                needingEvent.setNeedingEventStatus(NeedingEventStatus.Need);
+                needingEvent.setNeedingEventDateCreated(LocalDate.now());
+                log.info("A Needing event has been updated");
+
+            }else{//save a new needing event for the user
+                needingEvent.setUser(user.get());//TODO: get from session
+                needingEvent.setNeedingEventDateCreated(LocalDate.now());
+                needingEvent.setShoppingCategory(ShoppingCategory.valueOf(String.valueOf(needingEventRequestDto.getShoppingCategory())));
+                needingEvent.setItemNeeded(needingEventRequestDto.getItemNeeded());
+                needingEvent.setNeedingEventStatus(NeedingEventStatus.Need);
+                if (vendor.isPresent()) {
+                    needingEvent.setVendor(vendor.get());
+                } else {//add vendor to the vendor table
+                    VendorRequestDto newVendor = new VendorRequestDto();
+                    newVendor.setVendorName(needingEventRequestDto.getVendorName());
+                    createNewVendor(newVendor);
+                    needingEvent.setVendor(vendorRepository.findVendorByVendorName(needingEventRequestDto.getVendorName()).get());//now it should be there TODO: refactor the double call to the db
+                }
+                log.info("new Needing event has been created");
             }
-
             needingEventRepository.save(needingEvent);
-
+                //populate the dto:
             needingEventResponseDto.setItemNeededName(needingEvent.getItemNeeded());
             needingEventResponseDto.setShoppingCategory(String.valueOf(needingEvent.getShoppingCategory()));
             needingEventResponseDto.setDaysListed(getDaysListed(needingEvent.getNeedingEventDateCreated()));
-            //needingEventResponseDto.setUserId(needingEvent.getUser().getId());
             needingEventResponseDto.setNeedingEventStatus(String.valueOf(needingEvent.getNeedingEventStatus()));
-            log.info("new Needing event has been created");
-
+            needingEventResponseDto.setNeedingEventId(needingEvent.getNeedingEventId());
         }
         return needingEventResponseDto;
     }
+
 
     private long getDaysListed(LocalDate dateCreated){
         return ChronoUnit.DAYS.between(dateCreated, LocalDate.now())+1;
@@ -96,6 +106,7 @@ public class NeedingEventService {
             listOfNeedingEventDtoPerUser.add(nrdto);
         }
         listOfNeedingEventDtoPerUser.sort(Comparator.comparing(NeedingEventResponseDto::getDaysListed));
+        listOfNeedingEventDtoPerUser.sort(Comparator.comparing(NeedingEventResponseDto::getNeedingEventStatus).reversed());
         return listOfNeedingEventDtoPerUser;
     }
 

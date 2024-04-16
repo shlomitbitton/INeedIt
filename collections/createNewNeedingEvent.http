@@ -2,7 +2,7 @@ POST http://localhost:8080/createNewNeedingEvent
 Content-Type: application/json
 
 {
-  "itemNeeded": "Tortillias",
+  "itemNeeded": "Tortillas",
   "shoppingCategory": "FOOD",
   "userId": 2,
   "vendorName": "Briar Patch"
