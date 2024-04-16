@@ -1,4 +1,4 @@
-POST http://localhost:8080/createNewNeedingEvent
+POST http://localhost:8080/addUpdateNeedingEvent
 Content-Type: application/json
 
 {

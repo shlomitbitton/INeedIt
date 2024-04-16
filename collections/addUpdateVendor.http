@@ -1,4 +1,4 @@
-POST http://localhost:8080/createNewVendor
+POST http://localhost:8080/addUpdateVendor
 Content-Type: application/json
 
 {

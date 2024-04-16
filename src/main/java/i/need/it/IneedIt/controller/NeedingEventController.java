@@ -28,8 +28,8 @@ public class NeedingEventController {
     create new needing event
      */
 
-    @PostMapping(value="/createNewNeedingEvent")
-    public @ResponseBody NeedingEventResponseDto crateNeedingEvent(@RequestBody NeedingEventRequestDto needingEventDto){
+    @PostMapping(value="/addUpdateNeedingEvent")
+    public @ResponseBody NeedingEventResponseDto addUpdateNeedingEvent(@RequestBody NeedingEventRequestDto needingEventDto){
         log.info("User creating a new needing event");
         return needingEventService.createNewNeedingEvent(needingEventDto);
     }
@@ -46,8 +46,8 @@ public class NeedingEventController {
         return needingEventService.getAllNeedingEventsResponseDto();
     }
 
-    @PostMapping(value = "/createNewVendor")
-    public ResponseEntity<HttpStatus> createNewVendor(@RequestBody VendorRequestDto vendorRequestDto){
+    @PostMapping(value = "/addUpdateVendor")
+    public ResponseEntity<HttpStatus> addUpdateVendor(@RequestBody VendorRequestDto vendorRequestDto){
         return needingEventService.createNewVendor(vendorRequestDto);
     }
     /*

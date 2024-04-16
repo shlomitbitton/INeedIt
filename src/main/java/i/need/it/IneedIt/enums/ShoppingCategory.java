@@ -7,6 +7,7 @@ public enum ShoppingCategory {
     SHOES,
     ACCESSORIES,
     ELECTRONICS,
+    GENERAL,
     FURNITURE;
 
 

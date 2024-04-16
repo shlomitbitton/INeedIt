@@ -3,6 +3,7 @@ package i.need.it.IneedIt.model;
 import i.need.it.IneedIt.enums.NeedingEventStatus;
 import i.need.it.IneedIt.enums.ShoppingCategory;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -26,18 +27,22 @@ public class NeedingEvent {
 
 
     @Column(name = "ITEM_NEEDED")
+    @NotNull
     private String itemNeeded;
 
 
     @Column(name = "SHOPPING_CATEGORY")
     @Enumerated(EnumType.STRING)
+    @NotNull
     private ShoppingCategory shoppingCategory;
 
     @Column(name = "NEEDING_EVENT_DATE_CREATED")
+    @NotNull
     private LocalDate needingEventDateCreated;
 
     @Column(name = "NEEDING_EVENT_STATUS")
     @Enumerated(EnumType.STRING)
+    @NotNull
     private NeedingEventStatus needingEventStatus;
 
 //    @Column(name = "DAYS_LISTED" )
@@ -49,6 +54,7 @@ public class NeedingEvent {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "USER_ID")
+    @NotNull
     private User user;
 
 
