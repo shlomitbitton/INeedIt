@@ -1,0 +1,2 @@
+###get user details
+GET http://localhost:8080/getUserDetailsById?userId=2

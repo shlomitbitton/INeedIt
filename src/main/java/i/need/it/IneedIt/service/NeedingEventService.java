@@ -67,7 +67,7 @@ public class NeedingEventService {
                 log.info("A Needing event has been updated");
 
             }else{//save a new needing event for the user
-                needingEvent.setUser(user.get());//TODO: get from session
+                needingEvent.setUser(user.get());
                 needingEvent.setNeedingEventDateCreated(LocalDate.now());
                 needingEvent.setShoppingCategory(ShoppingCategory.valueOf(String.valueOf(needingEventRequestDto.getShoppingCategory())));
                 needingEvent.setItemNeeded(needingEventRequestDto.getItemNeeded());
