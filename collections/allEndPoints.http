@@ -1,0 +1,36 @@
+###get user details
+GET http://localhost:8080/getUserDetailsById?userId=2
+
+###updateNeedingEventStatus
+POST http://localhost:8080/updateNeedingEventStatus?needingEventId=16
+
+###needingEvent
+GET http://localhost:8080/needingEvent?needingEventId=15
+
+###allNeedsByUser
+GET http://localhost:8080/allNeedsByUser?userId=2
+
+###allNeedingEvents
+GET http://localhost:8080/allNeedingEvents
+
+###addUpdateVendor
+POST http://localhost:8080/addUpdateVendor
+Content-Type: application/json
+
+{
+  "vendorName": "Costco"
+}
+
+###addUpdateNeedingEvent
+POST http://localhost:8080/addUpdateNeedingEvent
+Content-Type: application/json
+
+{
+"itemNeeded": "Tortillas",
+"shoppingCategory": "FOOD",
+"userId": 2,
+"vendorName": "Briar Patch"
+}
+
+
+

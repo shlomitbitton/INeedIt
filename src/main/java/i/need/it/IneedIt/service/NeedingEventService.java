@@ -87,6 +87,7 @@ public class NeedingEventService {
             needingEventResponseDto.setItemNeededName(needingEvent.getItemNeeded());
             needingEventResponseDto.setShoppingCategory(String.valueOf(needingEvent.getShoppingCategory()));
             needingEventResponseDto.setDaysListed(getDaysListed(needingEvent.getNeedingEventDateCreated()));
+            needingEventResponseDto.setPotentialVendor(needingEvent.getVendor().getVendorName());
             needingEventResponseDto.setNeedingEventStatus(String.valueOf(needingEvent.getNeedingEventStatus()));
             needingEventResponseDto.setNeedingEventId(needingEvent.getNeedingEventId());
         }
@@ -136,6 +137,7 @@ public class NeedingEventService {
                 return NeedingEventResponseDto.builder()
                         .itemNeededName(needingEvent.get().getItemNeeded())
                         .daysListed(getDaysListed(needingEvent.get().getNeedingEventDateCreated()))
+                        .potentialVendor(needingEvent.get().getVendor().getVendorName())
                         .shoppingCategory(String.valueOf(needingEvent.get().getShoppingCategory()))
                         .needingEventStatus(String.valueOf(needingEvent.get().getNeedingEventStatus()))
                         .needingEventId(needingEvent.get().getNeedingEventId())

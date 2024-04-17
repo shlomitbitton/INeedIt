@@ -16,4 +16,5 @@ public class NeedingEventResponseDto {
     private long daysListed;
     private String needingEventStatus;
     private long needingEventId;
+    private String potentialVendor;
 }
