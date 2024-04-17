@@ -12,7 +12,7 @@
 	<artifactId>IneedIt</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>IneedIt</name>
-	<description>Shopping tracker app</description>
+	<description>Shopping planner app</description>
 	<properties>
 		<java.version>17</java.version>
 	</properties>

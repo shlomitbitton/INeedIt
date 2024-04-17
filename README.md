@@ -1,2 +1,2 @@
 # INeedIt
-Shopping tracker
+Shopping planner
