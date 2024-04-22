@@ -5,6 +5,6 @@ Content-Type: application/json
   "itemNeeded": "Tortillas",
   "shoppingCategory": "FOOD",
   "userId": 2,
-  "vendorName": "Briar Patch"
+  "vendorName": "Amazon"
 }
 

@@ -54,16 +54,20 @@ public class NeedingEventService {
     public NeedingEventResponseDto createNewNeedingEvent(NeedingEventRequestDto needingEventRequestDto){
         Optional<User> user = userRepository.findUserById(needingEventRequestDto.getUserId());
         Optional<Vendor> vendor = vendorRepository.findVendorByVendorName(needingEventRequestDto.getVendorName());
+        log.info("Vendor to update from request dto : "+needingEventRequestDto.getVendorName());
         NeedingEvent needingEvent = new NeedingEvent();
         NeedingEventResponseDto needingEventResponseDto = new NeedingEventResponseDto();
         if(user.isPresent()) {
             List<NeedingEventResponseDto> userExistingNeedingEvent = getUserNeedingEvents(String.valueOf(user.get().getId()));
             if(userExistingNeedingEvent.stream().anyMatch(itemNeeded -> itemNeeded.getItemNeededName().equals(needingEventRequestDto.getItemNeeded()))){
-                //change only the status and reset date created.
+                //in case  the needing status is changed,  reset date created.
                 long needingEventId = userExistingNeedingEvent.stream().filter(itemNeeded -> itemNeeded.getItemNeededName().equals(needingEventRequestDto.getItemNeeded())).findFirst().get().getNeedingEventId();
                 needingEvent = needingEventRepository.findById(needingEventId).get();
-                needingEvent.setNeedingEventStatus(NeedingEventStatus.Need);
-                needingEvent.setNeedingEventDateCreated(LocalDate.now());
+                needingEvent.setNeedingEventStatus(NeedingEventStatus.Need); //if the need had changed, it means it is in a needing status
+
+               // needingEvent.setNeedingEventDateCreated(LocalDate.now()); TODO: to enable when setting the toggle to need, the date need to be reset
+
+                updateVendor(needingEventRequestDto.getVendorName(), vendor, needingEvent);
                 log.info("A Needing event has been updated");
 
             }else{//save a new needing event for the user
@@ -72,17 +76,11 @@ public class NeedingEventService {
                 needingEvent.setShoppingCategory(ShoppingCategory.valueOf(String.valueOf(needingEventRequestDto.getShoppingCategory())));
                 needingEvent.setItemNeeded(needingEventRequestDto.getItemNeeded());
                 needingEvent.setNeedingEventStatus(NeedingEventStatus.Need);
-                if (vendor.isPresent()) {
-                    needingEvent.setVendor(vendor.get());
-                } else {//add vendor to the vendor table
-                    VendorRequestDto newVendor = new VendorRequestDto();
-                    newVendor.setVendorName(needingEventRequestDto.getVendorName());
-                    createNewVendor(newVendor);
-                    needingEvent.setVendor(vendorRepository.findVendorByVendorName(needingEventRequestDto.getVendorName()).get());//now it should be there TODO: refactor the double call to the db
-                }
+                updateVendor(needingEventRequestDto.getVendorName(), vendor, needingEvent);
                 log.info("new Needing event has been created");
             }
             needingEventRepository.save(needingEvent);
+            log.info("...and saved...");
                 //populate the dto:
             needingEventResponseDto.setItemNeededName(needingEvent.getItemNeeded());
             needingEventResponseDto.setShoppingCategory(String.valueOf(needingEvent.getShoppingCategory()));
@@ -92,6 +90,18 @@ public class NeedingEventService {
             needingEventResponseDto.setNeedingEventId(needingEvent.getNeedingEventId());
         }
         return needingEventResponseDto;
+    }
+
+    private void updateVendor(String updatedVendorName, Optional<Vendor> vendor, NeedingEvent needingEvent) {
+        log.info("Updating vendor: "+ updatedVendorName);
+        if (vendor.isPresent()) {
+            needingEvent.setVendor(vendor.get());
+        } else {//add vendor to the vendor table
+            VendorRequestDto newVendor = new VendorRequestDto();
+            newVendor.setVendorName(updatedVendorName);
+            createNewVendor(newVendor);
+            needingEvent.setVendor(vendorRepository.findVendorByVendorName(updatedVendorName).get());//now it should be there TODO: refactor the double call to the db
+        }
     }
 
 
