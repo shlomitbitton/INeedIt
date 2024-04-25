@@ -32,5 +32,8 @@ Content-Type: application/json
 "vendorName": "Briar Patch"
 }
 
+### get all shopping category
+GET http://localhost:8080/getAllShoppingCategory
+
 
 

@@ -1,6 +1,5 @@
 package i.need.it.IneedIt.service;
 
-import ch.qos.logback.core.util.AggregationType;
 import i.need.it.IneedIt.dto.NeedingEventRequestDto;
 import i.need.it.IneedIt.dto.NeedingEventResponseDto;
 import i.need.it.IneedIt.dto.VendorRequestDto;
@@ -15,7 +14,6 @@ import i.need.it.IneedIt.repository.VendorRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.integration.annotation.Aggregators;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -160,5 +158,9 @@ public class NeedingEventService {
 
             }
         return result;
+    }
+
+    public List<ShoppingCategory> getAllShoppingCategory() {
+       return  new ArrayList<ShoppingCategory>(EnumSet.allOf(ShoppingCategory.class));
     }
 }

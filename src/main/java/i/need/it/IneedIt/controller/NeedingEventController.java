@@ -3,6 +3,7 @@ package i.need.it.IneedIt.controller;
 import i.need.it.IneedIt.dto.NeedingEventRequestDto;
 import i.need.it.IneedIt.dto.NeedingEventResponseDto;
 import i.need.it.IneedIt.dto.VendorRequestDto;
+import i.need.it.IneedIt.enums.ShoppingCategory;
 import i.need.it.IneedIt.service.NeedingEventService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -64,5 +65,8 @@ public class NeedingEventController {
         return needingEventService.getNeedingEventById(needingEventId);
     }
 
-
+    @GetMapping(value="/getAllShoppingCategory")
+    public List<ShoppingCategory> getAllShoppingCategory(){
+        return needingEventService.getAllShoppingCategory();
+    }
 }

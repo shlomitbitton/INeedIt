@@ -8,6 +8,7 @@ public enum ShoppingCategory {
     ACCESSORIES,
     ELECTRONICS,
     GENERAL,
+    PETS,
     FURNITURE;
 
 
