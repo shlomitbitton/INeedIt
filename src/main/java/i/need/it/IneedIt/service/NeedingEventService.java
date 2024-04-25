@@ -1,5 +1,6 @@
 package i.need.it.IneedIt.service;
 
+import ch.qos.logback.core.util.AggregationType;
 import i.need.it.IneedIt.dto.NeedingEventRequestDto;
 import i.need.it.IneedIt.dto.NeedingEventResponseDto;
 import i.need.it.IneedIt.dto.VendorRequestDto;
@@ -14,6 +15,7 @@ import i.need.it.IneedIt.repository.VendorRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.integration.annotation.Aggregators;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -116,8 +118,11 @@ public class NeedingEventService {
             NeedingEventResponseDto nrdto = getNeedingEventById(String.valueOf(nepu.getNeedingEventId()));
             listOfNeedingEventDtoPerUser.add(nrdto);
         }
-        listOfNeedingEventDtoPerUser.sort(Comparator.comparing(NeedingEventResponseDto::getDaysListed));
-        listOfNeedingEventDtoPerUser.sort(Comparator.comparing(NeedingEventResponseDto::getNeedingEventStatus).reversed());
+        listOfNeedingEventDtoPerUser.sort(
+                Comparator.comparing(NeedingEventResponseDto::getNeedingEventStatus).reversed()
+                        .thenComparing(NeedingEventResponseDto::getPotentialVendor)
+                        .thenComparing(NeedingEventResponseDto::getDaysListed)
+        );
         return listOfNeedingEventDtoPerUser;
     }
 
