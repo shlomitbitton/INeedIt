@@ -3,7 +3,7 @@ Content-Type: application/json
 
 {
   "itemNeeded": "Tortillas",
-  "shoppingCategory": "FOOD",
+  "shoppingCategory": "ELECTRONICS",
   "userId": 2,
   "vendorName": "Amazon"
 }

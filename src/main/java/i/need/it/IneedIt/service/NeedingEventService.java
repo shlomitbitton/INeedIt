@@ -66,8 +66,11 @@ public class NeedingEventService {
                 needingEvent.setNeedingEventStatus(NeedingEventStatus.Need); //if the need had changed, it means it is in a needing status
 
                // needingEvent.setNeedingEventDateCreated(LocalDate.now()); TODO: to enable when setting the toggle to need, the date need to be reset
-
-                updateVendor(needingEventRequestDto.getVendorName(), vendor, needingEvent);
+                if(!needingEventRequestDto.getVendorName().isEmpty()){
+                    updateVendor(needingEventRequestDto.getVendorName(), vendor, needingEvent);
+                }
+                needingEvent.setShoppingCategory(needingEventRequestDto.getShoppingCategory());
+                log.info("Updating shopping category");
                 log.info("A Needing event has been updated");
 
             }else{//save a new needing event for the user
@@ -76,7 +79,9 @@ public class NeedingEventService {
                 needingEvent.setShoppingCategory(ShoppingCategory.valueOf(String.valueOf(needingEventRequestDto.getShoppingCategory())));
                 needingEvent.setItemNeeded(needingEventRequestDto.getItemNeeded());
                 needingEvent.setNeedingEventStatus(NeedingEventStatus.Need);
-                updateVendor(needingEventRequestDto.getVendorName(), vendor, needingEvent);
+                if(!needingEventRequestDto.getVendorName().isEmpty()) {
+                    updateVendor(needingEventRequestDto.getVendorName(), vendor, needingEvent);
+                }
                 log.info("new Needing event has been created");
             }
             needingEventRepository.save(needingEvent);
