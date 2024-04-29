@@ -70,8 +70,8 @@ public class NeedingEventController {
         return needingEventService.getAllShoppingCategory();
     }
 
-    @PostMapping(value="/deleteNeed")
-    public ResponseEntity<HttpStatus> deleteNeed(@RequestParam(value = "needingEventId") String needingEventId){
+    @DeleteMapping(value="/deleteNeed/{needingEventId}")
+    public ResponseEntity<HttpStatus> deleteNeed(@PathVariable("needingEventId") Long needingEventId){
         return needingEventService.deleteNeed(needingEventId);
     }
 }

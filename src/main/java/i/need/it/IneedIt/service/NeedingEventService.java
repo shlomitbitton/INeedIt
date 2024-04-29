@@ -169,8 +169,8 @@ public class NeedingEventService {
        return  new ArrayList<ShoppingCategory>(EnumSet.allOf(ShoppingCategory.class));
     }
 
-    public ResponseEntity<HttpStatus> deleteNeed(String needingEventId) {
-        Optional<NeedingEvent> aNeedToBeDeleted = needingEventRepository.findById(Long.valueOf(needingEventId));
+    public ResponseEntity<HttpStatus> deleteNeed(Long needingEventId) {
+        Optional<NeedingEvent> aNeedToBeDeleted = needingEventRepository.findById(needingEventId);
         if(aNeedToBeDeleted.isPresent()){
             needingEventRepository.delete(aNeedToBeDeleted.get());
             log.info("Need with id {} is being deleted", needingEventId);

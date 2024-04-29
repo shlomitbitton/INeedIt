@@ -36,7 +36,7 @@ Content-Type: application/json
 GET http://localhost:8080/getAllShoppingCategory
 
 ### delete a need for user
-POST http://localhost:8080/deleteNeed?needingEventId=13
+POST http://localhost:8080/deleteNeed/29
 
 
 
