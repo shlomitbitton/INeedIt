@@ -168,4 +168,16 @@ public class NeedingEventService {
     public List<ShoppingCategory> getAllShoppingCategory() {
        return  new ArrayList<ShoppingCategory>(EnumSet.allOf(ShoppingCategory.class));
     }
+
+    public ResponseEntity<HttpStatus> deleteNeed(String needingEventId) {
+        Optional<NeedingEvent> aNeedToBeDeleted = needingEventRepository.findById(Long.valueOf(needingEventId));
+        if(aNeedToBeDeleted.isPresent()){
+            needingEventRepository.delete(aNeedToBeDeleted.get());
+            log.info("Need with id {} is being deleted", needingEventId);
+            return new ResponseEntity<>(HttpStatus.OK);
+        }else{
+            log.info("No need found with id: {}", needingEventId);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
 }

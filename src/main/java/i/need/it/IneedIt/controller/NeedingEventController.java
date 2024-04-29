@@ -69,4 +69,9 @@ public class NeedingEventController {
     public List<ShoppingCategory> getAllShoppingCategory(){
         return needingEventService.getAllShoppingCategory();
     }
+
+    @PostMapping(value="/deleteNeed")
+    public ResponseEntity<HttpStatus> deleteNeed(@RequestParam(value = "needingEventId") String needingEventId){
+        return needingEventService.deleteNeed(needingEventId);
+    }
 }
