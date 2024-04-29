@@ -42,11 +42,11 @@
 			<artifactId>spring-integration-jpa</artifactId>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
-		<dependency>
-			<groupId>org.postgresql</groupId>
-			<artifactId>postgresql</artifactId>
-			<version>42.7.3</version>
-		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>org.postgresql</groupId>-->
+<!--			<artifactId>postgresql</artifactId>-->
+<!--			<version>42.7.3</version>-->
+<!--		</dependency>-->
 		<!-- https://mvnrepository.com/artifact/io.swagger/swagger-annotations -->
 		<dependency>
 			<groupId>org.springdoc</groupId>
@@ -73,7 +73,7 @@
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
-			<scope>runtime</scope>
+			<version>42.7.3</version>
 		</dependency>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
