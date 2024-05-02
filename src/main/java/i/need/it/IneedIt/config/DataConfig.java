@@ -15,6 +15,8 @@ public class DataConfig {
     public DataSource getDataSource() {
     DataSourceBuilder<?> dataSourceBuilder = DataSourceBuilder.create();
         dataSourceBuilder.driverClassName("org.postgresql.Driver");
+        dataSourceBuilder.username("shlomitbitton");
+        dataSourceBuilder.password("ineedit");
         dataSourceBuilder.url("jdbc:postgresql:ineedit");
     return dataSourceBuilder.build();
     }

@@ -1,20 +1,26 @@
 ###get user details
-GET http://localhost:8080/getUserDetailsById?userId=2
+GET http://localhost:8080/api/getUserDetailsById?userId=2
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c2VybmFtZSIsImlhdCI6MTcxNDY3ODY5NCwiZXhwIjoxNzE0NjgyMjk0fQ._-vt0z85tp4mvFXyjS7T5h_I2r1exEv_XP9cuXzgf02wjDYIDVhrnECCf93PjNpS44m_kf9OucRzswJOuDcc4w
 
 ###updateNeedingEventStatus
-POST http://localhost:8080/updateNeedingEventStatus?needingEventId=16
+POST http://localhost:8080/api/updateNeedingEventStatus?needingEventId=16
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c2VybmFtZSIsImlhdCI6MTcxNDY3ODY5NCwiZXhwIjoxNzE0NjgyMjk0fQ._-vt0z85tp4mvFXyjS7T5h_I2r1exEv_XP9cuXzgf02wjDYIDVhrnECCf93PjNpS44m_kf9OucRzswJOuDcc4w
 
 ###needingEvent
-GET http://localhost:8080/needingEvent?needingEventId=15
+GET http://localhost:8080/api/needingEvent?needingEventId=15
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c2VybmFtZSIsImlhdCI6MTcxNDY3ODY5NCwiZXhwIjoxNzE0NjgyMjk0fQ._-vt0z85tp4mvFXyjS7T5h_I2r1exEv_XP9cuXzgf02wjDYIDVhrnECCf93PjNpS44m_kf9OucRzswJOuDcc4w
 
 ###allNeedsByUser
-GET http://localhost:8080/allNeedsByUser?userId=2
+GET http://localhost:8080/api/allNeedsByUser?userId=3
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c2VybmFtZSIsImlhdCI6MTcxNDY3ODY5NCwiZXhwIjoxNzE0NjgyMjk0fQ._-vt0z85tp4mvFXyjS7T5h_I2r1exEv_XP9cuXzgf02wjDYIDVhrnECCf93PjNpS44m_kf9OucRzswJOuDcc4w
 
 ###allNeedingEvents
-GET http://localhost:8080/allNeedingEvents
+GET http://localhost:8080/api/allNeedingEvents
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c2VybmFtZSIsImlhdCI6MTcxNDY3ODY5NCwiZXhwIjoxNzE0NjgyMjk0fQ._-vt0z85tp4mvFXyjS7T5h_I2r1exEv_XP9cuXzgf02wjDYIDVhrnECCf93PjNpS44m_kf9OucRzswJOuDcc4w
 
 ###addUpdateVendor
-POST http://localhost:8080/addUpdateVendor
+POST http://localhost:8080/api/addUpdateVendor
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c2VybmFtZSIsImlhdCI6MTcxNDY3ODY5NCwiZXhwIjoxNzE0NjgyMjk0fQ._-vt0z85tp4mvFXyjS7T5h_I2r1exEv_XP9cuXzgf02wjDYIDVhrnECCf93PjNpS44m_kf9OucRzswJOuDcc4w
 Content-Type: application/json
 
 {
@@ -22,7 +28,8 @@ Content-Type: application/json
 }
 
 ###addUpdateNeedingEvent
-POST http://localhost:8080/addUpdateNeedingEvent
+POST http://localhost:8080/api/addUpdateNeedingEvent
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c2VybmFtZSIsImlhdCI6MTcxNDY3ODY5NCwiZXhwIjoxNzE0NjgyMjk0fQ._-vt0z85tp4mvFXyjS7T5h_I2r1exEv_XP9cuXzgf02wjDYIDVhrnECCf93PjNpS44m_kf9OucRzswJOuDcc4w
 Content-Type: application/json
 
 {
@@ -33,10 +40,21 @@ Content-Type: application/json
 }
 
 ### get all shopping category
-GET http://localhost:8080/getAllShoppingCategory
+GET http://localhost:8080/api/getAllShoppingCategory
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c2VybmFtZSIsImlhdCI6MTcxNDY3ODY5NCwiZXhwIjoxNzE0NjgyMjk0fQ._-vt0z85tp4mvFXyjS7T5h_I2r1exEv_XP9cuXzgf02wjDYIDVhrnECCf93PjNpS44m_kf9OucRzswJOuDcc4w
+
 
 ### delete a need for user
-POST http://localhost:8080/deleteNeed/29
+POST http://localhost:8080/api/deleteNeed/29
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c2VybmFtZSIsImlhdCI6MTcxNDY3ODY5NCwiZXhwIjoxNzE0NjgyMjk0fQ._-vt0z85tp4mvFXyjS7T5h_I2r1exEv_XP9cuXzgf02wjDYIDVhrnECCf93PjNpS44m_kf9OucRzswJOuDcc4w
 
+####login
+#POST http://localhost:8080/api/login
+#Content-Type: application/json
+#
+#{
+#  "username": "username",
+#  "password": "password"
+#}
 
 

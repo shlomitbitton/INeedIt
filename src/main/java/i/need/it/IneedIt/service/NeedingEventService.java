@@ -1,5 +1,6 @@
 package i.need.it.IneedIt.service;
 
+import i.need.it.IneedIt.config.GenerateToken;
 import i.need.it.IneedIt.dto.NeedingEventRequestDto;
 import i.need.it.IneedIt.dto.NeedingEventResponseDto;
 import i.need.it.IneedIt.dto.VendorRequestDto;
@@ -29,6 +30,8 @@ public class NeedingEventService {
 
     private final VendorRepository vendorRepository;
 
+    private final GenerateToken generateToken;
+
 
     public ResponseEntity<HttpStatus> updateNeedingEventStatus(String needingEventId){
         Optional<NeedingEvent> needingEventToUpdate = needingEventRepository.findById(Long.valueOf(needingEventId));
@@ -45,10 +48,11 @@ public class NeedingEventService {
         return ResponseEntity.ok().build();
     }
 
-    public NeedingEventService(NeedingEventRepository needingEventRepository, UserRepository userRepository, VendorRepository vendorRepository) {
+    public NeedingEventService(NeedingEventRepository needingEventRepository, UserRepository userRepository, VendorRepository vendorRepository, GenerateToken generateToken) {
         this.needingEventRepository = needingEventRepository;
         this.userRepository = userRepository;
         this.vendorRepository = vendorRepository;
+        this.generateToken = generateToken;
     }
 
     public NeedingEventResponseDto createNewNeedingEvent(NeedingEventRequestDto needingEventRequestDto){
@@ -58,7 +62,7 @@ public class NeedingEventService {
         NeedingEvent needingEvent = new NeedingEvent();
         NeedingEventResponseDto needingEventResponseDto = new NeedingEventResponseDto();
         if(user.isPresent()) {
-            List<NeedingEventResponseDto> userExistingNeedingEvent = getUserNeedingEvents(String.valueOf(user.get().getId()));
+            List<NeedingEventResponseDto> userExistingNeedingEvent = getUserNeedingEvents(String.valueOf(user.get().getId()));//, generateToken.generateToken(token)
             if(userExistingNeedingEvent.stream().anyMatch(itemNeeded -> itemNeeded.getItemNeededName().equals(needingEventRequestDto.getItemNeeded()))){
                 //in case  the needing status is changed,  reset date created.
                 long needingEventId = userExistingNeedingEvent.stream().filter(itemNeeded -> itemNeeded.getItemNeededName().equals(needingEventRequestDto.getItemNeeded())).findFirst().get().getNeedingEventId();
@@ -116,16 +120,18 @@ public class NeedingEventService {
 
     public List<NeedingEventResponseDto> getUserNeedingEvents(String userId){
         List<NeedingEventResponseDto> listOfNeedingEventDtoPerUser = new ArrayList<>();
-        List<NeedingEvent> needingEventsPerUser =  needingEventRepository.findAll().stream().filter(user -> user.getUser().getId() == Long.parseLong(userId)).toList();
-        for(NeedingEvent nepu : needingEventsPerUser){
-            NeedingEventResponseDto nrdto = getNeedingEventById(String.valueOf(nepu.getNeedingEventId()));
-            listOfNeedingEventDtoPerUser.add(nrdto);
-        }
-        listOfNeedingEventDtoPerUser.sort(
-                Comparator.comparing(NeedingEventResponseDto::getNeedingEventStatus).reversed()
-                        .thenComparing(NeedingEventResponseDto::getPotentialVendor)
-                        .thenComparing(NeedingEventResponseDto::getDaysListed)
-        );
+//        if(!token.isBlank()) {
+            List<NeedingEvent> needingEventsPerUser = needingEventRepository.findAll().stream().filter(user -> user.getUser().getId() == Long.parseLong(userId)).toList();
+            for (NeedingEvent nepu : needingEventsPerUser) {
+                NeedingEventResponseDto nrdto = getNeedingEventById(String.valueOf(nepu.getNeedingEventId()));
+                listOfNeedingEventDtoPerUser.add(nrdto);
+            }
+            listOfNeedingEventDtoPerUser.sort(
+                    Comparator.comparing(NeedingEventResponseDto::getNeedingEventStatus).reversed()
+                            .thenComparing(NeedingEventResponseDto::getPotentialVendor)
+                            .thenComparing(NeedingEventResponseDto::getDaysListed)
+            );
+//        }
         return listOfNeedingEventDtoPerUser;
     }
 
