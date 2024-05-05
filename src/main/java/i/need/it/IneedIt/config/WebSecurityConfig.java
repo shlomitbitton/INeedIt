@@ -41,8 +41,10 @@ public class WebSecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOriginPatterns(List.of("http://localhost:4200"));
         configuration.setAllowCredentials(true);
-        configuration.setAllowedOriginPatterns(List.of("http://localhost:4200")); // Use patterns for flexibility
+        configuration.addAllowedHeader("Authorization"); // Allow Authorization header
+        configuration.addAllowedHeader("Content-Type");
         configuration.setAllowedHeaders(List.of("*")); // Allows all headers
         configuration.setAllowedMethods(Arrays.asList("POST", "GET", "PUT", "DELETE", "OPTIONS")); // Specify the methods to allow
 

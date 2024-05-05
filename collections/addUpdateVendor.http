@@ -1,6 +1,0 @@
-POST http://localhost:8080/addUpdateVendor
-Content-Type: application/json
-
-{
-  "vendorName": "Costco"
-}
