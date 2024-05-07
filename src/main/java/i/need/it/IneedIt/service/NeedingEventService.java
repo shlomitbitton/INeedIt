@@ -55,13 +55,13 @@ public class NeedingEventService {
     }
 
     public NeedingEventResponseDto createNewNeedingEvent(NeedingEventRequestDto needingEventRequestDto){
-        Optional<User> user = userRepository.findUserById(needingEventRequestDto.getUserId());
+        Optional<User> user = userRepository.findUserByUserId(needingEventRequestDto.getUserId());
         Optional<Vendor> vendor = vendorRepository.findVendorByVendorName(needingEventRequestDto.getVendorName());
         log.info("Vendor to update from request dto : "+needingEventRequestDto.getVendorName());
         NeedingEvent needingEvent = new NeedingEvent();
         NeedingEventResponseDto needingEventResponseDto = new NeedingEventResponseDto();
         if(user.isPresent()) {
-            List<NeedingEventResponseDto> userExistingNeedingEvent = getUserNeedingEvents(String.valueOf(user.get().getId()));//, generateToken.generateToken(token)
+            List<NeedingEventResponseDto> userExistingNeedingEvent = getUserNeedingEvents(String.valueOf(user.get().getUserId()));//, generateToken.generateToken(token)
             if(userExistingNeedingEvent.stream().anyMatch(itemNeeded -> itemNeeded.getItemNeededName().equals(needingEventRequestDto.getItemNeeded()))){
                 //in case  the needing status is changed,  reset date created.
                 long needingEventId = userExistingNeedingEvent.stream().filter(itemNeeded -> itemNeeded.getItemNeededName().equals(needingEventRequestDto.getItemNeeded())).findFirst().get().getNeedingEventId();
@@ -119,7 +119,7 @@ public class NeedingEventService {
 
     public List<NeedingEventResponseDto> getUserNeedingEvents(String userId){
         List<NeedingEventResponseDto> listOfNeedingEventDtoPerUser = new ArrayList<>();
-            List<NeedingEvent> needingEventsPerUser = needingEventRepository.findAll().stream().filter(user -> user.getUser().getId() == Long.parseLong(userId)).toList();
+            List<NeedingEvent> needingEventsPerUser = needingEventRepository.findAll().stream().filter(user -> user.getUser().getUserId() == Long.parseLong(userId)).toList();
             for (NeedingEvent nepu : needingEventsPerUser) {
                 NeedingEventResponseDto nrdto = getNeedingEventById(String.valueOf(nepu.getNeedingEventId()));
                 listOfNeedingEventDtoPerUser.add(nrdto);

@@ -1,5 +1,6 @@
 package i.need.it.IneedIt.controller;
 
+import i.need.it.IneedIt.dto.NewUserRegistrationRequestDto;
 import i.need.it.IneedIt.dto.UserResponseDto;
 import i.need.it.IneedIt.dto.LoginRequestDto;
 import i.need.it.IneedIt.service.JwtService;
@@ -45,6 +46,12 @@ public class UserController {
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
+    }
+
+    @PostMapping(value="/userRegistration")
+    public Long userRegistration(@RequestBody NewUserRegistrationRequestDto newUserRegistrationRequestDto){
+        log.info("Registering new user");
+        return userService.addNewUser(newUserRegistrationRequestDto);
     }
 
 

@@ -36,7 +36,7 @@ private final JwtTokenFilter jwtTokenFilter;
                 .cors(customizer -> customizer.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/api/login").permitAll()  // Allow unauthenticated access to the login endpoint
+                        .requestMatchers("/api/login", "/api/userRegistration").permitAll()  // Allow unauthenticated access to the login endpoint
                         .anyRequest().authenticated())
                 .oauth2Client(withDefaults())
                 .httpBasic(httpBasic -> httpBasic.realmName("Ineedit"));
