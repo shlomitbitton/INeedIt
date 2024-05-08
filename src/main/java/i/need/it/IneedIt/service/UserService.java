@@ -49,7 +49,7 @@ public class UserService {
 
         User newUser = new User();
 
-        newUser.setEmail(newUserRegistrationRequestDto.getUserEmail());
+        newUser.setEmail("");
         newUser.setPassword(newUserRegistrationRequestDto.getPassword());
         newUser.setFirstName("");
         newUser.setLastName("");
