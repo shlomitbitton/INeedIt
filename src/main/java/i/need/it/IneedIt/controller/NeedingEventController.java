@@ -84,7 +84,7 @@ public class NeedingEventController {
         return needingEventService.getAllShoppingCategory();
     }
 
-    @DeleteMapping(value="/deleteNeed/{needing-event-id}")
+    @DeleteMapping(value="/delete-need/{needing-event-id}")
     public ResponseEntity<HttpStatus> deleteNeed(@PathVariable("needing-event-id") Long needingEventId){
         return needingEventService.deleteNeed(needingEventId);
     }
