@@ -51,8 +51,8 @@ public class UserService {
 
         newUser.setEmail(newUserRegistrationRequestDto.getUserEmail());
         newUser.setPassword(newUserRegistrationRequestDto.getPassword());
-        newUser.setFirstName(newUserRegistrationRequestDto.getUserFirstName());
-        newUser.setLastName(newUserRegistrationRequestDto.getUserLastName());
+        newUser.setFirstName("");
+        newUser.setLastName("");
         newUser.setUsername(newUserRegistrationRequestDto.getUsername());
         newUser.setDateCreated(LocalDateTime.now());
 
