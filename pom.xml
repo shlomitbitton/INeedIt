@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>i.need.it</groupId>
 	<artifactId>IneedIt</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0-SNAPSHOT</version>
 	<name>IneedIt</name>
 	<description>Shopping planner app</description>
 	<properties>

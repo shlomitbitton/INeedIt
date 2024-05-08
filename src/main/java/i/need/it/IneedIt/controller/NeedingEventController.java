@@ -47,7 +47,7 @@ public class NeedingEventController {
         This endpoint present all the needs of a user
     */
     @GetMapping(value="/all-needs-by-user")
-    public List<NeedingEventResponseDto> getAllUserNeedingEvent(@RequestParam(value = "userId") String userId){
+    public List<NeedingEventResponseDto> getAllUserNeedingEvent(@RequestParam(value = "user-id") String userId){
         Object currentUserId = SecurityUtils.getCurrentUserId();
         if(Objects.equals(currentUserId, userId)) {
             return needingEventService.getUserNeedingEvents(userId);
@@ -73,6 +73,9 @@ public class NeedingEventController {
         return needingEventService.updateNeedingEventStatus(needingEventId);
     }
 
+    /*
+    needing event by id
+     */
     @GetMapping(value = "/needing-event")
     public NeedingEventResponseDto getNeedingEventById(@RequestParam(value = "needing-event-id") String needingEventId){
         log.info("Get needing event By Id");
