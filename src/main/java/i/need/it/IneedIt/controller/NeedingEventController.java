@@ -34,7 +34,7 @@ public class NeedingEventController {
     create new needing event
      */
 
-    @PostMapping(value="/addUpdateNeedingEvent")
+    @PostMapping(value="/add-update-needing-event")
     public ResponseEntity<StatusResponseDto>addUpdateNeedingEvent(@RequestBody NeedingEventRequestDto needingEventDto){
         Object currentUserId = SecurityUtils.getCurrentUserId();
         if(currentUserId != null && currentUserId.toString().equals(needingEventDto.getUserId().toString())) {
@@ -46,7 +46,7 @@ public class NeedingEventController {
     /*
         This endpoint present all the needs of a user
     */
-    @GetMapping(value="/allNeedsByUser")
+    @GetMapping(value="/all-needs-by-user")
     public List<NeedingEventResponseDto> getAllUserNeedingEvent(@RequestParam(value = "userId") String userId){
         Object currentUserId = SecurityUtils.getCurrentUserId();
         if(Objects.equals(currentUserId, userId)) {
@@ -61,31 +61,31 @@ public class NeedingEventController {
 //        return needingEventService.getAllNeedingEventsResponseDto();
 //    }
 
-    @PostMapping(value = "/addUpdateVendor")
+    @PostMapping(value = "/add-update-vendor")
     public ResponseEntity<HttpStatus> addUpdateVendor(@RequestBody VendorRequestDto vendorRequestDto){
         return needingEventService.createNewVendor(vendorRequestDto);
     }
     /*
     updating needing event status
      */
-    @PostMapping(value = "/updateNeedingEventStatus")
-    public ResponseEntity<HttpStatus> updateNeedingEventStatus(@RequestParam(value = "needingEventId") String needingEventId){
+    @PostMapping(value = "/update-needing-event-status")
+    public ResponseEntity<HttpStatus> updateNeedingEventStatus(@RequestParam(value = "needing-event-id") String needingEventId){
         return needingEventService.updateNeedingEventStatus(needingEventId);
     }
 
-    @GetMapping(value = "/needingEvent")
-    public NeedingEventResponseDto getNeedingEventById(@RequestParam(value = "needingEventId") String needingEventId){
+    @GetMapping(value = "/needing-event")
+    public NeedingEventResponseDto getNeedingEventById(@RequestParam(value = "needing-event-id") String needingEventId){
         log.info("Get needing event By Id");
         return needingEventService.getNeedingEventById(needingEventId);
     }
 
-    @GetMapping(value="/getAllShoppingCategory")
+    @GetMapping(value="/shopping-category")
     public List<ShoppingCategory> getAllShoppingCategory(){
         return needingEventService.getAllShoppingCategory();
     }
 
-    @DeleteMapping(value="/deleteNeed/{needingEventId}")
-    public ResponseEntity<HttpStatus> deleteNeed(@PathVariable("needingEventId") Long needingEventId){
+    @DeleteMapping(value="/deleteNeed/{needing-event-id}")
+    public ResponseEntity<HttpStatus> deleteNeed(@PathVariable("needing-event-id") Long needingEventId){
         return needingEventService.deleteNeed(needingEventId);
     }
 }

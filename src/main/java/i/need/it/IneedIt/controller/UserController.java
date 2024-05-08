@@ -28,8 +28,8 @@ public class UserController {
         this.GenerateToken = GenerateToken;
     }
 
-    @GetMapping(value="/getUserDetailsById")
-    public UserResponseDto getUserDetailsById(@RequestParam(value = "userId") String userId){
+    @GetMapping(value="/user-details")
+    public UserResponseDto getUserDetailsById(@RequestParam(value = "user-id") String userId){
         return userService.getUserDetailsById(userId);
     }
 
@@ -48,7 +48,7 @@ public class UserController {
         }
     }
 
-    @PostMapping(value="/userRegistration")
+    @PostMapping(value="/user-registration")
     public Long userRegistration(@RequestBody NewUserRegistrationRequestDto newUserRegistrationRequestDto){
         log.info("Registering new user");
         return userService.addNewUser(newUserRegistrationRequestDto);
