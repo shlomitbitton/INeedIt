@@ -41,7 +41,7 @@ public class UserController {
             String token = GenerateToken.generateToken(userId.toString());
             Map<String, String> response = new HashMap<>();
             response.put("token", token);
-            response.put("userId", String.valueOf(userId));
+            response.put("user-id", String.valueOf(userId));
             return ResponseEntity.ok().body(response);
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
