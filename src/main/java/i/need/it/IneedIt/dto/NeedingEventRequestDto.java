@@ -16,5 +16,6 @@ public class NeedingEventRequestDto {
     private ShoppingCategory shoppingCategory;
     private Long userId;
     private String vendorName;
+    private String needNotes;
 
 }

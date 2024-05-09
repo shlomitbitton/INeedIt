@@ -15,4 +15,5 @@ public class NeedingEventResponseDto extends StatusResponseDto {
     private String needingEventStatus;
     private long needingEventId;
     private String potentialVendor;
+    private String needNotes;
 }

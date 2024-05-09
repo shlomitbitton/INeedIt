@@ -79,6 +79,7 @@ public class NeedingEventService {
             }else{//save a new needing event for the user
                 needingEvent.setUser(user.get());
                 needingEvent.setNeedingEventDateCreated(LocalDate.now());
+                needingEvent.setNeedNotes(needingEventRequestDto.getNeedNotes());
                 needingEvent.setShoppingCategory(ShoppingCategory.valueOf(String.valueOf(needingEventRequestDto.getShoppingCategory())));
                 needingEvent.setItemNeeded(needingEventRequestDto.getItemNeeded());
                 needingEvent.setNeedingEventStatus(NeedingEventStatus.Need);
@@ -93,6 +94,7 @@ public class NeedingEventService {
             needingEventResponseDto.setItemNeededName(needingEvent.getItemNeeded());
             needingEventResponseDto.setShoppingCategory(String.valueOf(needingEvent.getShoppingCategory()));
             needingEventResponseDto.setDaysListed(getDaysListed(needingEvent.getNeedingEventDateCreated()));
+            needingEventResponseDto.setNeedNotes("");
             needingEventResponseDto.setPotentialVendor(needingEvent.getVendor().getVendorName());
             needingEventResponseDto.setNeedingEventStatus(String.valueOf(needingEvent.getNeedingEventStatus()));
             needingEventResponseDto.setNeedingEventId(needingEvent.getNeedingEventId());
@@ -158,6 +160,7 @@ public class NeedingEventService {
                 return NeedingEventResponseDto.builder()
                         .itemNeededName(needingEvent.get().getItemNeeded())
                         .daysListed(getDaysListed(needingEvent.get().getNeedingEventDateCreated()))
+                        .needNotes(needingEvent.get().getNeedNotes() == null? "":needingEvent.get().getNeedNotes())
                         .potentialVendor(needingEvent.get().getVendor().getVendorName())
                         .shoppingCategory(String.valueOf(needingEvent.get().getShoppingCategory()))
                         .needingEventStatus(String.valueOf(needingEvent.get().getNeedingEventStatus()))

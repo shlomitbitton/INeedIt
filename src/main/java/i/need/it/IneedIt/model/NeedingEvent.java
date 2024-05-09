@@ -45,6 +45,9 @@ public class NeedingEvent {
     @NotNull
     private NeedingEventStatus needingEventStatus;
 
+    @Column(name = "NEED_NOTES")
+    private String needNotes;
+
 //    @Column(name = "DAYS_LISTED" )
 //    private long daysListed; //how long do I have this item in the needing list
 
