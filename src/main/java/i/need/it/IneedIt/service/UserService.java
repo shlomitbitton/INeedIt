@@ -17,12 +17,9 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final SecurityFilterChain securityFilterChain;
 
-
-    public UserService(UserRepository userRepository, SecurityFilterChain securityFilterChain) {
+    public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.securityFilterChain = securityFilterChain;
     }
 
 
