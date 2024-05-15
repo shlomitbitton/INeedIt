@@ -5,7 +5,6 @@ import i.need.it.IneedIt.dto.UserResponseDto;
 import i.need.it.IneedIt.model.User;
 import i.need.it.IneedIt.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
