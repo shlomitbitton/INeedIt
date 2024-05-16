@@ -17,7 +17,7 @@ import java.util.Objects;
 
 @Slf4j
 @RestController
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "www.ineedit.fun")
 @RequestMapping("/api")
 public class NeedingEventController {
 
