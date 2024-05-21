@@ -16,7 +16,7 @@ import java.util.Map;
 
 @Slf4j
 @RestController
-@CrossOrigin(origins = "www.ineedit.fun")
+@CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("/api")
 public class UserController {
 

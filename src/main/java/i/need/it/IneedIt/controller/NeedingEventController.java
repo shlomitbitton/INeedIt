@@ -1,10 +1,7 @@
 package i.need.it.IneedIt.controller;
 
 import i.need.it.IneedIt.config.SecurityUtils;
-import i.need.it.IneedIt.dto.StatusResponseDto;
-import i.need.it.IneedIt.dto.NeedingEventRequestDto;
-import i.need.it.IneedIt.dto.NeedingEventResponseDto;
-import i.need.it.IneedIt.dto.VendorRequestDto;
+import i.need.it.IneedIt.dto.*;
 import i.need.it.IneedIt.enums.ShoppingCategory;
 import i.need.it.IneedIt.service.NeedingEventService;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +14,7 @@ import java.util.Objects;
 
 @Slf4j
 @RestController
-@CrossOrigin(origins = "www.ineedit.fun")
+@CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("/api")
 public class NeedingEventController {
 
@@ -47,7 +44,7 @@ public class NeedingEventController {
         This endpoint present all the needs of a user
     */
     @GetMapping(value="/all-needs-by-user")
-    public List<NeedingEventResponseDto> getAllUserNeedingEvent(@RequestParam(value = "user-id") String userId){
+    public List<NeedingEventResponseDto> getUserNeeds(@RequestParam(value = "user-id") String userId){
         Object currentUserId = SecurityUtils.getCurrentUserId();
         if(Objects.equals(currentUserId, userId)) {
             return needingEventService.getUserNeedingEvents(userId);
@@ -91,4 +88,10 @@ public class NeedingEventController {
     public ResponseEntity<HttpStatus> deleteNeed(@PathVariable("needing-event-id") Long needingEventId){
         return needingEventService.deleteNeed(needingEventId);
     }
+
+    @PostMapping(value="/update-need-notes")
+    public ResponseEntity<HttpStatus> updateNedNotes(@RequestBody UpdateNeedNotesDto updateNeedNotesDto){
+        return needingEventService.updateNeedNotes(updateNeedNotesDto);
+    }
+
 }

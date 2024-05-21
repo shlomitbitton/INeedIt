@@ -1,26 +1,26 @@
 ###get user details
-GET http://localhost:8080/api/getUserDetailsById?userId=2
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c2VybmFtZSIsImlhdCI6MTcxNDY3ODY5NCwiZXhwIjoxNzE0NjgyMjk0fQ._-vt0z85tp4mvFXyjS7T5h_I2r1exEv_XP9cuXzgf02wjDYIDVhrnECCf93PjNpS44m_kf9OucRzswJOuDcc4w
+GET http://localhost:8080/api/user-details?user-id=2
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIzIiwiaWF0IjoxNzE1MTgzMjQ3LCJleHAiOjE3MTUxODY4NDd9.nfYn9I2R5iLY3ulr2XlroNYJ4iW7BwFoGDtG86svPm7Q_upZzLVrKWDx79ATrYCk7hKuWcBgYEDU-Vge52UtbQ
 
 ###updateNeedingEventStatus
-POST http://localhost:8080/api/updateNeedingEventStatus?needingEventId=16
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c2VybmFtZSIsImlhdCI6MTcxNDY3ODY5NCwiZXhwIjoxNzE0NjgyMjk0fQ._-vt0z85tp4mvFXyjS7T5h_I2r1exEv_XP9cuXzgf02wjDYIDVhrnECCf93PjNpS44m_kf9OucRzswJOuDcc4w
+POST http://localhost:8080/api/update-needing-event-status?needing-event-id=16
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIzIiwiaWF0IjoxNzE1MTgzMjQ3LCJleHAiOjE3MTUxODY4NDd9.nfYn9I2R5iLY3ulr2XlroNYJ4iW7BwFoGDtG86svPm7Q_upZzLVrKWDx79ATrYCk7hKuWcBgYEDU-Vge52UtbQ
 
 ###needingEvent
-GET http://localhost:8080/api/needingEvent?needingEventId=15
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c2VybmFtZSIsImlhdCI6MTcxNDY3ODY5NCwiZXhwIjoxNzE0NjgyMjk0fQ._-vt0z85tp4mvFXyjS7T5h_I2r1exEv_XP9cuXzgf02wjDYIDVhrnECCf93PjNpS44m_kf9OucRzswJOuDcc4w
+GET http://localhost:8080/api/needing-event?needing-event-id=44
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIzIiwiaWF0IjoxNzE1MjkyOTM5LCJleHAiOjE3MTUyOTY1Mzl9.4nWJ2641awoz8FkdTYEXOrzCVk_Bha86Boepx8BmeFjgXpTUeglhvL_f8mu-UZfz85LZ0ugmUVZ49Am8KSDz0g
 
 ###allNeedsByUser
-GET http://localhost:8080/api/allNeedsByUser?userId=3
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c2VybmFtZSIsImlhdCI6MTcxNDY3ODY5NCwiZXhwIjoxNzE0NjgyMjk0fQ._-vt0z85tp4mvFXyjS7T5h_I2r1exEv_XP9cuXzgf02wjDYIDVhrnECCf93PjNpS44m_kf9OucRzswJOuDcc4w
+GET http://localhost:8080/api/all-needs-by-user?user-id=2
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyIiwiaWF0IjoxNzE1MTk2MjExLCJleHAiOjE3MTUxOTk4MTF9.dpIyIj8C23YpS8_60QlU9Ts_gipUnHvoNt5qnShzAebA6pj5YMGhG0VA3SACnsbxpSDqjoRYZqeyXo35islZXA
 
-###allNeedingEvents
-GET http://localhost:8080/api/allNeedingEvents
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c2VybmFtZSIsImlhdCI6MTcxNDY3ODY5NCwiZXhwIjoxNzE0NjgyMjk0fQ._-vt0z85tp4mvFXyjS7T5h_I2r1exEv_XP9cuXzgf02wjDYIDVhrnECCf93PjNpS44m_kf9OucRzswJOuDcc4w
+####allNeedingEvents
+#GET http://localhost:8080/api/all-needing-events
+#Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIzIiwiaWF0IjoxNzE1MTg5MDczLCJleHAiOjE3MTUxOTI2NzN9.FBduvmZmMSWZDSKS8p2SohffsKVQqQUMdHpsOzMrkmRhDUL8Gs4vEUsTqZWDWQDIgWI_LYh5DmUGZIH1swy8Og
 
 ###addUpdateVendor
-POST http://localhost:8080/api/addUpdateVendor
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c2VybmFtZSIsImlhdCI6MTcxNDY3ODY5NCwiZXhwIjoxNzE0NjgyMjk0fQ._-vt0z85tp4mvFXyjS7T5h_I2r1exEv_XP9cuXzgf02wjDYIDVhrnECCf93PjNpS44m_kf9OucRzswJOuDcc4w
+POST http://localhost:8080/api/add-update-vendor
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIzIiwiaWF0IjoxNzE1MTgzMjQ3LCJleHAiOjE3MTUxODY4NDd9.nfYn9I2R5iLY3ulr2XlroNYJ4iW7BwFoGDtG86svPm7Q_upZzLVrKWDx79ATrYCk7hKuWcBgYEDU-Vge52UtbQ
 Content-Type: application/json
 
 {
@@ -28,33 +28,45 @@ Content-Type: application/json
 }
 
 ###addUpdateNeedingEvent
-POST http://localhost:8080/api/addUpdateNeedingEvent
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c2VybmFtZSIsImlhdCI6MTcxNDY3ODY5NCwiZXhwIjoxNzE0NjgyMjk0fQ._-vt0z85tp4mvFXyjS7T5h_I2r1exEv_XP9cuXzgf02wjDYIDVhrnECCf93PjNpS44m_kf9OucRzswJOuDcc4w
+POST http://localhost:8080/api/add-update-needing-event
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIzIiwiaWF0IjoxNzE1MTgzMjQ3LCJleHAiOjE3MTUxODY4NDd9.nfYn9I2R5iLY3ulr2XlroNYJ4iW7BwFoGDtG86svPm7Q_upZzLVrKWDx79ATrYCk7hKuWcBgYEDU-Vge52UtbQ
 Content-Type: application/json
 
 {
 "itemNeeded": "Tortillas",
 "shoppingCategory": "FOOD",
-"userId": 2,
+"userId": 3,
 "vendorName": "Briar Patch"
 }
 
 ### get all shopping category
-GET http://localhost:8080/api/getAllShoppingCategory
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c2VybmFtZSIsImlhdCI6MTcxNDY3ODY5NCwiZXhwIjoxNzE0NjgyMjk0fQ._-vt0z85tp4mvFXyjS7T5h_I2r1exEv_XP9cuXzgf02wjDYIDVhrnECCf93PjNpS44m_kf9OucRzswJOuDcc4w
+GET http://localhost:8080/api/shopping-category
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIzIiwiaWF0IjoxNzE1MTgzMjQ3LCJleHAiOjE3MTUxODY4NDd9.nfYn9I2R5iLY3ulr2XlroNYJ4iW7BwFoGDtG86svPm7Q_upZzLVrKWDx79ATrYCk7hKuWcBgYEDU-Vge52UtbQ
 
 
 ### delete a need for user
-POST http://localhost:8080/api/deleteNeed/29
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c2VybmFtZSIsImlhdCI6MTcxNDY3ODY5NCwiZXhwIjoxNzE0NjgyMjk0fQ._-vt0z85tp4mvFXyjS7T5h_I2r1exEv_XP9cuXzgf02wjDYIDVhrnECCf93PjNpS44m_kf9OucRzswJOuDcc4w
+DELETE http://localhost:8080/api/delete-need/33
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIzIiwiaWF0IjoxNzE1MTg5MDczLCJleHAiOjE3MTUxOTI2NzN9.FBduvmZmMSWZDSKS8p2SohffsKVQqQUMdHpsOzMrkmRhDUL8Gs4vEUsTqZWDWQDIgWI_LYh5DmUGZIH1swy8Og
 
 ####login
-#POST http://localhost:8080/api/login
-#Content-Type: application/json
-#
-#{
-#  "username": "username",
-#  "password": "password"
-#}
+POST http://localhost:8080/api/login
+Content-Type: application/json
+
+{
+  "username": "username",
+  "password": "password"
+}
+
+### register new user
+POST http://localhost:8080/api/user-registration
+Content-Type: application/json
+
+{
+  "userFirstName": "",
+  "userLastName": "",
+  "userEmail": "",
+  "username": "ellac",
+  "password": "password"
+}
 
 

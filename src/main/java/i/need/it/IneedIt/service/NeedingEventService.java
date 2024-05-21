@@ -2,6 +2,7 @@ package i.need.it.IneedIt.service;
 
 import i.need.it.IneedIt.dto.NeedingEventRequestDto;
 import i.need.it.IneedIt.dto.NeedingEventResponseDto;
+import i.need.it.IneedIt.dto.UpdateNeedNotesDto;
 import i.need.it.IneedIt.dto.VendorRequestDto;
 import i.need.it.IneedIt.enums.NeedingEventStatus;
 import i.need.it.IneedIt.enums.ShoppingCategory;
@@ -160,7 +161,7 @@ public class NeedingEventService {
                 return NeedingEventResponseDto.builder()
                         .itemNeededName(needingEvent.get().getItemNeeded())
                         .daysListed(getDaysListed(needingEvent.get().getNeedingEventDateCreated()))
-                        .needNotes(needingEvent.get().getNeedNotes() == null? "":needingEvent.get().getNeedNotes())
+                        .needNotes(needingEvent.get().getNeedNotes()== null? "":needingEvent.get().getNeedNotes())
                         .potentialVendor(needingEvent.get().getVendor().getVendorName())
                         .shoppingCategory(String.valueOf(needingEvent.get().getShoppingCategory()))
                         .needingEventStatus(String.valueOf(needingEvent.get().getNeedingEventStatus()))
@@ -185,5 +186,15 @@ public class NeedingEventService {
             log.info("No need found with id: {}", needingEventId);
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+    }
+
+    public ResponseEntity<HttpStatus> updateNeedNotes(UpdateNeedNotesDto updateNeedNotesDto) {
+        Optional<NeedingEvent> needEventToUpdate = needingEventRepository.findById(updateNeedNotesDto.getNeedEventId());
+        if(needEventToUpdate.isPresent()){
+            needEventToUpdate.get().setNeedNotes(updateNeedNotesDto.getNeedNotes());
+            needingEventRepository.save(needEventToUpdate.get());
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 }
