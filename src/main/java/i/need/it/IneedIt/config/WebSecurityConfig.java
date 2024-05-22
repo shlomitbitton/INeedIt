@@ -46,7 +46,7 @@ private final JwtTokenFilter jwtTokenFilter;
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(List.of("http://localhost:4200"));
+        configuration.setAllowedOriginPatterns(List.of("https://www.ineedit.fun", "https://ineedit.fun"));
         configuration.setAllowCredentials(true);
         configuration.addAllowedHeader("Authorization"); // Allow Authorization header
         configuration.addAllowedHeader("Content-Type");
