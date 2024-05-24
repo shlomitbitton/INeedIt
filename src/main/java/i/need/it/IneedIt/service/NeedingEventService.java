@@ -55,17 +55,17 @@ public class NeedingEventService {
         this.generateToken = generateToken;
     }
 
-    public NeedingEventResponseDto createNewNeedingEvent(NeedingEventRequestDto needingEventRequestDto){
+    public NeedingEventResponseDto createUpdateNeedingEvent(NeedingEventRequestDto needingEventRequestDto){
         Optional<User> user = userRepository.findUserByUserId(needingEventRequestDto.getUserId());
-        Optional<Vendor> vendor = vendorRepository.findVendorByVendorName(needingEventRequestDto.getVendorName());
+        Optional<Vendor> vendor = vendorRepository.findByVendorNameIgnoreCase(needingEventRequestDto.getVendorName());
         log.info("Vendor to update from request dto : "+needingEventRequestDto.getVendorName());
         NeedingEvent needingEvent = new NeedingEvent();
         NeedingEventResponseDto needingEventResponseDto = new NeedingEventResponseDto();
         if(user.isPresent()) {
             List<NeedingEventResponseDto> userExistingNeedingEvent = getUserNeedingEvents(String.valueOf(user.get().getUserId()));//, generateToken.generateToken(token)
-            if(userExistingNeedingEvent.stream().anyMatch(itemNeeded -> itemNeeded.getItemNeededName().equals(needingEventRequestDto.getItemNeeded()))){
+            if(userExistingNeedingEvent.stream().anyMatch(itemNeeded -> itemNeeded.getItemNeededName().equalsIgnoreCase(needingEventRequestDto.getItemNeeded()))){
                 //in case  the needing status is changed,  reset date created.
-                long needingEventId = userExistingNeedingEvent.stream().filter(itemNeeded -> itemNeeded.getItemNeededName().equals(needingEventRequestDto.getItemNeeded())).findFirst().get().getNeedingEventId();
+                long needingEventId = userExistingNeedingEvent.stream().filter(itemNeeded -> itemNeeded.getItemNeededName().equalsIgnoreCase(needingEventRequestDto.getItemNeeded())).findFirst().get().getNeedingEventId();
                 needingEvent = needingEventRepository.findById(needingEventId).get();
                 needingEvent.setNeedingEventStatus(NeedingEventStatus.Need); //if the need had changed, it means it is in a needing status
 
@@ -111,7 +111,7 @@ public class NeedingEventService {
             VendorRequestDto newVendor = new VendorRequestDto();
             newVendor.setVendorName(updatedVendorName);
             createNewVendor(newVendor);
-            needingEvent.setVendor(vendorRepository.findVendorByVendorName(updatedVendorName).get());//now it should be there TODO: refactor the double call to the db
+            needingEvent.setVendor(vendorRepository.findByVendorNameIgnoreCase(updatedVendorName).get());//now it should be there TODO: refactor the double call to the db
         }
     }
 
@@ -123,16 +123,28 @@ public class NeedingEventService {
     public List<NeedingEventResponseDto> getUserNeedingEvents(String userId){
         List<NeedingEventResponseDto> listOfNeedingEventDtoPerUser = new ArrayList<>();
             List<NeedingEvent> needingEventsPerUser = needingEventRepository.findAll().stream().filter(user -> user.getUser().getUserId() == Long.parseLong(userId)).toList();
-            for (NeedingEvent nepu : needingEventsPerUser) {
-                NeedingEventResponseDto nrdto = getNeedingEventById(String.valueOf(nepu.getNeedingEventId()));
-                listOfNeedingEventDtoPerUser.add(nrdto);
+
+//        List<NeedingEvent> listOfFulfilledNeeds =
+//                needingEventsPerUser.stream().filter(fulFilledNeeds-> fulFilledNeeds.getNeedingEventStatus().equals(NeedingEventStatus.Fulfilled)).toList();
+
+            for (NeedingEvent nepu : needingEventsPerUser) { //only status need
+                //if(nepu.getNeedingEventStatus().equals(NeedingEventStatus.Need)){
+                    NeedingEventResponseDto nrdto = getNeedingEventById(String.valueOf(nepu.getNeedingEventId()));
+                    listOfNeedingEventDtoPerUser.add(nrdto);
+                //}
             }
-            listOfNeedingEventDtoPerUser.sort(
-                    Comparator.comparing(NeedingEventResponseDto::getNeedingEventStatus).reversed()
-                            .thenComparing(NeedingEventResponseDto::getPotentialVendor)
-                            .thenComparing(NeedingEventResponseDto::getDaysListed)
-            );
+
+        return structureNeedList(listOfNeedingEventDtoPerUser);
+    }
+
+    private List<NeedingEventResponseDto> structureNeedList(List<NeedingEventResponseDto> listOfNeedingEventDtoPerUser){
+
+        listOfNeedingEventDtoPerUser.sort(
+                Comparator.comparing(NeedingEventResponseDto::getNeedingEventStatus).reversed()
+                        .thenComparing(NeedingEventResponseDto::getPotentialVendor)
+                        .thenComparing(NeedingEventResponseDto::getDaysListed));
         return listOfNeedingEventDtoPerUser;
+
     }
 
     public List<String> getAllNeedingEventsResponseDto(){
@@ -140,7 +152,7 @@ public class NeedingEventService {
     }
 
     public ResponseEntity<HttpStatus> createNewVendor(VendorRequestDto vendorRequestDto){
-        Optional<Vendor> vendor = vendorRepository.findVendorByVendorName(vendorRequestDto.getVendorName());
+        Optional<Vendor> vendor = vendorRepository.findByVendorNameIgnoreCase(vendorRequestDto.getVendorName());
         if(vendor.isEmpty()){
             Vendor newVendor = new Vendor();
             newVendor.setVendorName(vendorRequestDto.getVendorName());

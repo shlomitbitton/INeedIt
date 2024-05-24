@@ -32,7 +32,7 @@ public class UserService {
     }
 
     public Long authenticate(String username, String password) {
-        Optional<User> user = userRepository.findUserByUsername(username).stream().findFirst();
+        Optional<User> user = userRepository.findUserByUsernameIgnoreCase(username).stream().findFirst();
         if(user.isPresent() && Objects.equals(user.get().getPassword(), password)) {
                 log.info("User had found");
                 return user.get().getUserId();
