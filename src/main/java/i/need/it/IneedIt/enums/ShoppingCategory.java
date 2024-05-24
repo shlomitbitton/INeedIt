@@ -8,8 +8,18 @@ public enum ShoppingCategory {
     ACCESSORIES,
     ELECTRONICS,
     GENERAL,
-    PETS,
+    PET,
+    CRAFT,
+    OFFICE,
+    JEWELRY,
+    PHARMACY,
+    HOME,
+    GROCERY,
+    CLOTHING,
+    TOY,
+    SPORTING,
+    BOOK,
+    MUSIC,
     FURNITURE;
-
 
 }
