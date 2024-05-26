@@ -62,7 +62,7 @@ public class NeedingEventService {
         NeedingEvent needingEvent = new NeedingEvent();
         NeedingEventResponseDto needingEventResponseDto = new NeedingEventResponseDto();
         if(user.isPresent()) {
-            List<NeedingEventResponseDto> userExistingNeedingEvent = getUserNeedingEvents(String.valueOf(user.get().getUserId()));//, generateToken.generateToken(token)
+            List<NeedingEventResponseDto> userExistingNeedingEvent = getUserNeedingEvents(String.valueOf(user.get().getUserId()));
             if(userExistingNeedingEvent.stream().anyMatch(itemNeeded -> itemNeeded.getItemNeededName().equalsIgnoreCase(needingEventRequestDto.getItemNeeded()))){
                 //in case  the needing status is changed,  reset date created.
                 long needingEventId = userExistingNeedingEvent.stream().filter(itemNeeded -> itemNeeded.getItemNeededName().equalsIgnoreCase(needingEventRequestDto.getItemNeeded())).findFirst().get().getNeedingEventId();
@@ -141,8 +141,10 @@ public class NeedingEventService {
 
         listOfNeedingEventDtoPerUser.sort(
                 Comparator.comparing(NeedingEventResponseDto::getNeedingEventStatus).reversed()
+                        .thenComparing(NeedingEventResponseDto::getItemNeededName)
                         .thenComparing(NeedingEventResponseDto::getPotentialVendor)
-                        .thenComparing(NeedingEventResponseDto::getDaysListed));
+                        .thenComparing(NeedingEventResponseDto::getShoppingCategory));
+//                        .thenComparing(NeedingEventResponseDto::getDaysListed));
         return listOfNeedingEventDtoPerUser;
 
     }
