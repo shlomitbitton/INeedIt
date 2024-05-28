@@ -134,7 +134,7 @@ public class NeedingEventService {
                 //}
             }
 
-        return structureNeedList(listOfNeedingEventDtoPerUser);
+        return sortNeeds(listOfNeedingEventDtoPerUser, true, false);
     }
 
     private List<NeedingEventResponseDto> structureNeedList(List<NeedingEventResponseDto> listOfNeedingEventDtoPerUser){
@@ -146,7 +146,18 @@ public class NeedingEventService {
                         .thenComparing(NeedingEventResponseDto::getShoppingCategory));
 //                        .thenComparing(NeedingEventResponseDto::getDaysListed));
         return listOfNeedingEventDtoPerUser;
+    }
 
+    private List<NeedingEventResponseDto> sortNeeds(List<NeedingEventResponseDto> listOfNeedingEventDtoPerUser, boolean sortByVendor, boolean sortByCategory){
+        if(sortByCategory){
+            listOfNeedingEventDtoPerUser.sort(Comparator.comparing(NeedingEventResponseDto::getShoppingCategory)
+                    .thenComparing(NeedingEventResponseDto::getItemNeededName));
+        }
+        if(sortByVendor){
+            listOfNeedingEventDtoPerUser.sort(Comparator.comparing(NeedingEventResponseDto::getPotentialVendor)
+                    .thenComparing(NeedingEventResponseDto::getItemNeededName));
+        }
+        return listOfNeedingEventDtoPerUser;
     }
 
     public List<String> getAllNeedingEventsResponseDto(){

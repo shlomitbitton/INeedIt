@@ -6,9 +6,8 @@ import i.need.it.IneedIt.model.User;
 import i.need.it.IneedIt.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-
+import org.mindrot.jbcrypt.BCrypt;
 import java.time.LocalDateTime;
-import java.util.Objects;
 import java.util.Optional;
 
 @Slf4j
@@ -33,20 +32,30 @@ public class UserService {
 
     public Long authenticate(String username, String password) {
         Optional<User> user = userRepository.findUserByUsernameIgnoreCase(username).stream().findFirst();
-        if(user.isPresent() && Objects.equals(user.get().getPassword(), password)) {
+        if(user.isPresent() && BCrypt.checkpw(password, user.get().getPassword())) {
                 log.info("User had found");
                 return user.get().getUserId();
         }
         return null;
     }
 
+    public void hashExistingasswords(String plainTextPassword, String username){
+        User findUser = userRepository.findUserByUsername(username);
+        log.info("findUser " + findUser);
+        findUser.setPassword(BCrypt.hashpw(plainTextPassword, BCrypt.gensalt()));
+        userRepository.save(findUser);
+    }
+
+    private String hashPassword(String plainTextPassword){
+        return BCrypt.hashpw(plainTextPassword, BCrypt.gensalt());
+    }
 
     public Long addNewUser(NewUserRegistrationRequestDto newUserRegistrationRequestDto) {
 
         User newUser = new User();
 
         newUser.setEmail("");
-        newUser.setPassword(newUserRegistrationRequestDto.getPassword());
+        newUser.setPassword(hashPassword(newUserRegistrationRequestDto.getPassword()));
         newUser.setFirstName("");
         newUser.setLastName("");
         newUser.setUsername(newUserRegistrationRequestDto.getUsername());
