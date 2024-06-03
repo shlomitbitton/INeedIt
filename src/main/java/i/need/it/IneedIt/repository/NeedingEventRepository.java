@@ -10,12 +10,11 @@ import java.util.List;
 @Repository
 public interface NeedingEventRepository extends JpaRepository<NeedingEvent, Long>{
 
-//    List<NeedingEvent> findByUserId(Long userId);
 
     @Query("SELECT itemNeeded FROM NeedingEvent")
     List<String> streamAllItemsNeededByUserId();
 
-    @Query("SELECT needingEventId FROM NeedingEvent where user.id = ?1")
+    @Query("SELECT needingEventId FROM NeedingEvent where user.userId = ?1")
     List<Long> getAllItemsNeededByUserId(String userId);
 
 }
