@@ -1,9 +1,6 @@
 package i.need.it.IneedIt.service;
 
-import i.need.it.IneedIt.dto.NeedingEventRequestDto;
-import i.need.it.IneedIt.dto.NeedingEventResponseDto;
-import i.need.it.IneedIt.dto.UpdateNeedNotesDto;
-import i.need.it.IneedIt.dto.VendorRequestDto;
+import i.need.it.IneedIt.dto.*;
 import i.need.it.IneedIt.enums.NeedingEventStatus;
 import i.need.it.IneedIt.enums.ShoppingCategory;
 import i.need.it.IneedIt.model.NeedingEvent;
@@ -81,6 +78,7 @@ public class NeedingEventService {
                 needingEvent.setUser(user.get());
                 needingEvent.setNeedingEventDateCreated(LocalDate.now());
                 needingEvent.setNeedNotes(needingEventRequestDto.getNeedNotes());
+                needingEvent.setPublicNeed(0);//By default, for a new need
                 needingEvent.setShoppingCategory(ShoppingCategory.valueOf(String.valueOf(needingEventRequestDto.getShoppingCategory())));
                 needingEvent.setItemNeeded(needingEventRequestDto.getItemNeeded());
                 needingEvent.setNeedingEventStatus(NeedingEventStatus.Need);
@@ -96,6 +94,7 @@ public class NeedingEventService {
             needingEventResponseDto.setShoppingCategory(String.valueOf(needingEvent.getShoppingCategory()));
             needingEventResponseDto.setDaysListed(getDaysListed(needingEvent.getNeedingEventDateCreated()));
             needingEventResponseDto.setNeedNotes("");
+            needingEventResponseDto.setIsPublic(needingEvent.getPublicNeed());
             needingEventResponseDto.setPotentialVendor(needingEvent.getVendor().getVendorName());
             needingEventResponseDto.setNeedingEventStatus(String.valueOf(needingEvent.getNeedingEventStatus()));
             needingEventResponseDto.setNeedingEventId(needingEvent.getNeedingEventId());
@@ -188,6 +187,7 @@ public class NeedingEventService {
                         .daysListed(getDaysListed(needingEvent.get().getNeedingEventDateCreated()))
                         .needNotes(needingEvent.get().getNeedNotes()== null? "":needingEvent.get().getNeedNotes())
                         .potentialVendor(needingEvent.get().getVendor().getVendorName())
+                        .isPublic(needingEvent.get().getPublicNeed())
                         .shoppingCategory(String.valueOf(needingEvent.get().getShoppingCategory()))
                         .needingEventStatus(String.valueOf(needingEvent.get().getNeedingEventStatus()))
                         .needingEventId(needingEvent.get().getNeedingEventId())
@@ -217,6 +217,22 @@ public class NeedingEventService {
         Optional<NeedingEvent> needEventToUpdate = needingEventRepository.findById(updateNeedNotesDto.getNeedEventId());
         if(needEventToUpdate.isPresent()){
             needEventToUpdate.get().setNeedNotes(updateNeedNotesDto.getNeedNotes());
+            needingEventRepository.save(needEventToUpdate.get());
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+
+
+    public ResponseEntity<HttpStatus> changeNeedPublicStatus(String needingEventId) {
+        Optional<NeedingEvent> needEventToUpdate = needingEventRepository.findById(Long.valueOf(needingEventId));
+        if(needEventToUpdate.isPresent()){
+            if(needEventToUpdate.get().getPublicNeed() == 0){
+                needEventToUpdate.get().setPublicNeed(1);
+            }else{
+                needEventToUpdate.get().setPublicNeed(0);
+            }
             needingEventRepository.save(needEventToUpdate.get());
             return new ResponseEntity<>(HttpStatus.OK);
         }

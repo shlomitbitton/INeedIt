@@ -14,7 +14,6 @@ import java.util.Objects;
 
 @Slf4j
 @RestController
-@CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("/api")
 public class NeedingEventController {
 
@@ -36,7 +35,7 @@ public class NeedingEventController {
         Object currentUserId = SecurityUtils.getCurrentUserId();
         if(currentUserId != null && currentUserId.toString().equals(needingEventDto.getUserId().toString())) {
             log.info("User creating a new needing event");
-            return ResponseEntity.status(HttpStatus.OK).body(needingEventService.createNewNeedingEvent(needingEventDto));
+            return ResponseEntity.status(HttpStatus.OK).body(needingEventService.createUpdateNeedingEvent(needingEventDto));
         }
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
     }
@@ -52,11 +51,12 @@ public class NeedingEventController {
         return null;
     }
 
-//    @GetMapping(value="/allNeedingEvents")
-//    public List<String> getAllNeedingEvent(){
-//    //TODO: only for admin
-//        return needingEventService.getAllNeedingEventsResponseDto();
-//    }
+
+
+    @PostMapping(value="make-need-public")
+    public ResponseEntity<HttpStatus> changeNeedPublicStatus(@RequestParam(value = "needing-event-id") String needingEventId){
+        return needingEventService.changeNeedPublicStatus(needingEventId);
+    }
 
     @PostMapping(value = "/add-update-vendor")
     public ResponseEntity<HttpStatus> addUpdateVendor(@RequestBody VendorRequestDto vendorRequestDto){

@@ -48,8 +48,9 @@ public class NeedingEvent {
     @Column(name = "NEED_NOTES")
     private String needNotes;
 
-//    @Column(name = "DAYS_LISTED" )
-//    private long daysListed; //how long do I have this item in the needing list
+    @Column(name = "PUBLIC_NEED")
+    private int publicNeed;
+
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "VENDOR_ID")
