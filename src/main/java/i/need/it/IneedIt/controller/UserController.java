@@ -1,6 +1,7 @@
 package i.need.it.IneedIt.controller;
 
 import i.need.it.IneedIt.dto.NewUserRegistrationRequestDto;
+import i.need.it.IneedIt.dto.UserRegistrationResponseDto;
 import i.need.it.IneedIt.dto.UserResponseDto;
 import i.need.it.IneedIt.dto.LoginRequestDto;
 import i.need.it.IneedIt.service.JwtService;
@@ -16,7 +17,6 @@ import java.util.Map;
 
 @Slf4j
 @RestController
-@CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("/api")
 public class UserController {
 
@@ -49,10 +49,12 @@ public class UserController {
     }
 
     @PostMapping(value="/user-registration")
-    public Long userRegistration(@RequestBody NewUserRegistrationRequestDto newUserRegistrationRequestDto){
+    public UserRegistrationResponseDto userRegistration(@RequestBody NewUserRegistrationRequestDto newUserRegistrationRequestDto){
         log.info("Registering new user");
         return userService.addNewUser(newUserRegistrationRequestDto);
     }
+
+   
 
 
 }

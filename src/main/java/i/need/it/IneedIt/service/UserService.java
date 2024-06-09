@@ -1,14 +1,17 @@
 package i.need.it.IneedIt.service;
 
 import i.need.it.IneedIt.dto.NewUserRegistrationRequestDto;
+import i.need.it.IneedIt.dto.UserRegistrationResponseDto;
 import i.need.it.IneedIt.dto.UserResponseDto;
 import i.need.it.IneedIt.model.User;
 import i.need.it.IneedIt.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.mindrot.jbcrypt.BCrypt;
+
 import java.time.LocalDateTime;
 import java.util.Optional;
+
 
 @Slf4j
 @Component
@@ -50,19 +53,42 @@ public class UserService {
         return BCrypt.hashpw(plainTextPassword, BCrypt.gensalt());
     }
 
-    public Long addNewUser(NewUserRegistrationRequestDto newUserRegistrationRequestDto) {
+    public UserRegistrationResponseDto addNewUser(NewUserRegistrationRequestDto newUserRegistrationRequestDto) {
+        UserRegistrationResponseDto populateDto = new UserRegistrationResponseDto();
+        Long userId = null;
+        String status =  "fail";
+        String message = "Username is invalid.";
 
-        User newUser = new User();
+        try {
+            if (newUserRegistrationRequestDto.getUsername().isBlank() || newUserRegistrationRequestDto.getUsername().contains(" ")
+                || newUserRegistrationRequestDto.getUsername().length() < 5 ||
+                        newUserRegistrationRequestDto.getUsername().length() > 20){
+                     log.info("Username should have no spaces and between 5 to 20 characters.");
+            }else if(userRepository.findUserByUsername(newUserRegistrationRequestDto.getUsername()) == null) {
+                    // Create new user as username does not exist
+                    User newUser = new User();
+                    newUser.setUsername(newUserRegistrationRequestDto.getUsername());
+                    newUser.setPassword(hashPassword(newUserRegistrationRequestDto.getPassword()));
+                    newUser.setEmail("");
+                    newUser.setFirstName("");
+                    newUser.setLastName("");
+                    newUser.setDateCreated(LocalDateTime.now());
+                    userRepository.save(newUser);
 
-        newUser.setEmail("");
-        newUser.setPassword(hashPassword(newUserRegistrationRequestDto.getPassword()));
-        newUser.setFirstName("");
-        newUser.setLastName("");
-        newUser.setUsername(newUserRegistrationRequestDto.getUsername());
-        newUser.setDateCreated(LocalDateTime.now());
-
-        userRepository.save(newUser);
-
-        return newUser.getUserId();
+                    userId = newUser.getUserId(); // Get the user ID after saving the new user
+                    status = "success";
+                    message = "User registered successfully.";
+            } else if(userRepository.findUserByUsername(newUserRegistrationRequestDto.getUsername()) != null){
+                    message = "Username already exists.";
+                    log.info("Username already exists.");
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+        populateDto.setUserId(userId); // Set userId, will be null if registration failed
+        populateDto.setStatus(status);
+        populateDto.setMessage(message);
+        return populateDto;
     }
+
 }
