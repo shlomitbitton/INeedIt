@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -238,4 +239,15 @@ public class NeedingEventService {
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
+
+    public List<PublicNeedsResponseDto> getAllPublicNeeds() {
+        List<Long> publicNeeds = needingEventRepository.getAllPublicNeeds();
+        return publicNeeds.stream()
+                .map(needingEventRepository::findById)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .map(needingEvent -> new PublicNeedsResponseDto(needingEvent.getNeedingEventId(), needingEvent.getItemNeeded()))
+                .collect(Collectors.toList());
+    }
+
 }

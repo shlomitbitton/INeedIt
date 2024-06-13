@@ -17,4 +17,7 @@ public interface NeedingEventRepository extends JpaRepository<NeedingEvent, Long
     @Query("SELECT needingEventId FROM NeedingEvent where user.userId = ?1")
     List<Long> getAllItemsNeededByUserId(String userId);
 
+    @Query("SELECT needingEventId FROM NeedingEvent where publicNeed = 1")
+    List<Long> getAllPublicNeeds();
+
 }

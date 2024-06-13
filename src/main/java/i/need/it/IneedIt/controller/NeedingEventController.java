@@ -4,11 +4,13 @@ import i.need.it.IneedIt.config.SecurityUtils;
 import i.need.it.IneedIt.dto.*;
 import i.need.it.IneedIt.enums.ShoppingCategory;
 import i.need.it.IneedIt.service.NeedingEventService;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -92,6 +94,11 @@ public class NeedingEventController {
     @PostMapping(value="/update-need-notes")
     public ResponseEntity<HttpStatus> updateNedNotes(@RequestBody UpdateNeedNotesDto updateNeedNotesDto){
         return needingEventService.updateNeedNotes(updateNeedNotesDto);
+    }
+
+    @GetMapping(value="/public-needs")
+    public List<PublicNeedsResponseDto> getAllPublicNeeds(){
+        return needingEventService.getAllPublicNeeds();
     }
 
 }
