@@ -5,6 +5,7 @@ import i.need.it.IneedIt.dto.UserRegistrationResponseDto;
 import i.need.it.IneedIt.dto.UserResponseDto;
 import i.need.it.IneedIt.model.User;
 import i.need.it.IneedIt.repository.UserRepository;
+import i.need.it.IneedIt.utils.EmailUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.mindrot.jbcrypt.BCrypt;
@@ -42,7 +43,7 @@ public class UserService {
         return null;
     }
 
-    public void hashExistingasswords(String plainTextPassword, String username){
+    public void hashExistingPasswords(String plainTextPassword, String username){
         User findUser = userRepository.findUserByUsername(username);
         log.info("findUser " + findUser);
         findUser.setPassword(BCrypt.hashpw(plainTextPassword, BCrypt.gensalt()));
@@ -78,6 +79,12 @@ public class UserService {
                     userId = newUser.getUserId(); // Get the user ID after saving the new user
                     status = "success";
                     message = "User registered successfully.";
+                    try{
+                        String TO_EMAIL_ADDRESS = "shlomitbitton12@gmail.com";
+                        EmailUtil.sendEmail(TO_EMAIL_ADDRESS, "A new user had registered!", "Thanks for registering with us!");
+                    }catch(Exception e){
+                        log.error("Couldnt send email");
+                    }
             } else if(userRepository.findUserByUsername(newUserRegistrationRequestDto.getUsername()) != null){
                     message = "Username already exists.";
                     log.info("Username already exists.");
