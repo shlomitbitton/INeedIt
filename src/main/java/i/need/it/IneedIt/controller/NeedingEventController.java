@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @Slf4j
@@ -45,7 +46,7 @@ public class NeedingEventController {
         This endpoint present all the needs of a user
     */
     @GetMapping(value="/all-needs-by-user")
-    public List<NeedingEventResponseDto> getUserNeeds(@RequestParam(value = "user-id") String userId){
+    public Map<String, List<NeedingEventResponseDto>> getUserNeeds(@RequestParam(value = "user-id") String userId){
         Object currentUserId = SecurityUtils.getCurrentUserId();
         if(Objects.equals(currentUserId, userId)) {
             return needingEventService.getUserNeedingEvents(userId);

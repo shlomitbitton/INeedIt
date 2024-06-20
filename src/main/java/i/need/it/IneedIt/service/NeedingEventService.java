@@ -9,6 +9,7 @@ import i.need.it.IneedIt.model.Vendor;
 import i.need.it.IneedIt.repository.NeedingEventRepository;
 import i.need.it.IneedIt.repository.UserRepository;
 import i.need.it.IneedIt.repository.VendorRepository;
+import i.need.it.IneedIt.utils.MapUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,8 +29,6 @@ public class NeedingEventService {
 
     private final VendorRepository vendorRepository;
 
-    private final JwtService generateToken;
-
 
     public ResponseEntity<HttpStatus> updateNeedingEventStatus(String needingEventId){
         Optional<NeedingEvent> needingEventToUpdate = needingEventRepository.findById(Long.valueOf(needingEventId));
@@ -46,11 +45,11 @@ public class NeedingEventService {
         return ResponseEntity.ok().build();
     }
 
-    public NeedingEventService(NeedingEventRepository needingEventRepository, UserRepository userRepository, VendorRepository vendorRepository, JwtService generateToken) {
+    public NeedingEventService(NeedingEventRepository needingEventRepository, UserRepository userRepository, VendorRepository vendorRepository) {
         this.needingEventRepository = needingEventRepository;
         this.userRepository = userRepository;
         this.vendorRepository = vendorRepository;
-        this.generateToken = generateToken;
+//        this.generateToken = generateToken;
     }
 
     public NeedingEventResponseDto createUpdateNeedingEvent(NeedingEventRequestDto needingEventRequestDto){
@@ -60,10 +59,11 @@ public class NeedingEventService {
         NeedingEvent needingEvent = new NeedingEvent();
         NeedingEventResponseDto needingEventResponseDto = new NeedingEventResponseDto();
         if(user.isPresent()) {
-            List<NeedingEventResponseDto> userExistingNeedingEvent = getUserNeedingEvents(String.valueOf(user.get().getUserId()));
-            if(userExistingNeedingEvent.stream().anyMatch(itemNeeded -> itemNeeded.getItemNeededName().equalsIgnoreCase(needingEventRequestDto.getItemNeeded()))){
+            Map<String, List<NeedingEventResponseDto>> userExistingNeedingEvent = getUserNeedingEvents(String.valueOf(user.get().getUserId()));
+            List<NeedingEventResponseDto> listOfItemsOfVendor = MapUtil.findValueByCaseInsensitiveKey(userExistingNeedingEvent, needingEventRequestDto.getVendorName());
+            if(listOfItemsOfVendor != null && listOfItemsOfVendor.stream().anyMatch(itemNeeded -> itemNeeded.getItemNeededName().equalsIgnoreCase(needingEventRequestDto.getItemNeeded()))){
                 //in case  the needing status is changed,  reset date created.
-                long needingEventId = userExistingNeedingEvent.stream().filter(itemNeeded -> itemNeeded.getItemNeededName().equalsIgnoreCase(needingEventRequestDto.getItemNeeded())).findFirst().get().getNeedingEventId();
+                long needingEventId = (listOfItemsOfVendor).stream().filter(itemNeeded -> itemNeeded.getItemNeededName().equalsIgnoreCase(needingEventRequestDto.getItemNeeded())).findFirst().get().getNeedingEventId();
                 needingEvent = needingEventRepository.findById(needingEventId).get();
                 needingEvent.setNeedingEventStatus(NeedingEventStatus.Need); //if the need had changed, it means it is in a needing status
 
@@ -120,21 +120,18 @@ public class NeedingEventService {
         return ChronoUnit.DAYS.between(dateCreated, LocalDate.now())+1;
     }
 
-    public List<NeedingEventResponseDto> getUserNeedingEvents(String userId){
-        List<NeedingEventResponseDto> listOfNeedingEventDtoPerUser = new ArrayList<>();
+    public Map<String, List<NeedingEventResponseDto>> getUserNeedingEvents(String userId){
             List<NeedingEvent> needingEventsPerUser = needingEventRepository.findAll().stream().filter(user -> user.getUser().getUserId() == Long.parseLong(userId)).toList();
 
-//        List<NeedingEvent> listOfFulfilledNeeds =
-//                needingEventsPerUser.stream().filter(fulFilledNeeds-> fulFilledNeeds.getNeedingEventStatus().equals(NeedingEventStatus.Fulfilled)).toList();
-
-            for (NeedingEvent nepu : needingEventsPerUser) { //only status need
-                //if(nepu.getNeedingEventStatus().equals(NeedingEventStatus.Need)){
-                    NeedingEventResponseDto nrdto = getNeedingEventById(String.valueOf(nepu.getNeedingEventId()));
-                    listOfNeedingEventDtoPerUser.add(nrdto);
-                //}
-            }
-
-        return sortNeeds(listOfNeedingEventDtoPerUser, true, false);
+        Map<String, List<NeedingEventResponseDto>> mapOfUserNeedingEventDtos = new HashMap<>();
+        for (NeedingEvent nepu : needingEventsPerUser) {
+            NeedingEventResponseDto nrdto = getNeedingEventById(String.valueOf(nepu.getNeedingEventId()));
+            List<NeedingEventResponseDto> list = mapOfUserNeedingEventDtos.computeIfAbsent(nrdto.getPotentialVendor(), k -> new ArrayList<>());
+            list.add(nrdto);
+            list.sort(Comparator.comparing(NeedingEventResponseDto::getItemNeededName, String.CASE_INSENSITIVE_ORDER));
+        }
+        return mapOfUserNeedingEventDtos;
+                //sortNeeds(listOfNeedingEventDtoPerUser, true, false);
     }
 
     private List<NeedingEventResponseDto> structureNeedList(List<NeedingEventResponseDto> listOfNeedingEventDtoPerUser){
