@@ -59,48 +59,65 @@ public class NeedingEventService {
         NeedingEvent needingEvent = new NeedingEvent();
         NeedingEventResponseDto needingEventResponseDto = new NeedingEventResponseDto();
         if(user.isPresent()) {
-            Map<String, List<NeedingEventResponseDto>> userExistingNeedingEvent = getUserNeedingEvents(String.valueOf(user.get().getUserId()));
-            List<NeedingEventResponseDto> listOfItemsOfVendor = MapUtil.findValueByCaseInsensitiveKey(userExistingNeedingEvent, needingEventRequestDto.getVendorName());
-            if(listOfItemsOfVendor != null && listOfItemsOfVendor.stream().anyMatch(itemNeeded -> itemNeeded.getItemNeededName().equalsIgnoreCase(needingEventRequestDto.getItemNeeded()))){
-                //in case  the needing status is changed,  reset date created.
-                long needingEventId = (listOfItemsOfVendor).stream().filter(itemNeeded -> itemNeeded.getItemNeededName().equalsIgnoreCase(needingEventRequestDto.getItemNeeded())).findFirst().get().getNeedingEventId();
-                needingEvent = needingEventRepository.findById(needingEventId).get();
-                needingEvent.setNeedingEventStatus(NeedingEventStatus.Need); //if the need had changed, it means it is in a needing status
+            Map<String, List<NeedingEventResponseDto>> useerHasNeeds = getUserNeedingEvents(String.valueOf(user.get().getUserId()));
+            if(!useerHasNeeds.isEmpty()) { //user has needs
+                for (List<NeedingEventResponseDto> events : useerHasNeeds.values()) {
+                    if (events.stream()
+                            .anyMatch(itemNeeded -> itemNeeded.getItemNeededName().equalsIgnoreCase(needingEventRequestDto.getItemNeeded()))) {
+                        //in case  the needing status is changed,  recent date created.
+                        long needingEventId = events.stream().filter(itemNeeded -> itemNeeded.getItemNeededName().equalsIgnoreCase(needingEventRequestDto.getItemNeeded())).findFirst().get().getNeedingEventId();
+                        needingEvent = needingEventRepository.findById(needingEventId).get();
+                        needingEvent.setNeedingEventStatus(NeedingEventStatus.Need); //if the need had changed, it means it is in a needing status
 
-               // needingEvent.setNeedingEventDateCreated(LocalDate.now()); TODO: to enable when setting the toggle to need, the date need to be reset
-                if(!needingEventRequestDto.getVendorName().isEmpty()){
-                    updateVendor(needingEventRequestDto.getVendorName(), vendor, needingEvent);
+                        // needingEvent.setNeedingEventDateCreated(LocalDate.now()); TODO: to enable when setting the toggle to need, the date need to be reset
+                        if (!needingEventRequestDto.getVendorName().isEmpty()) {
+                            updateVendor(needingEventRequestDto.getVendorName(), vendor, needingEvent);
+                        }
+                        needingEvent.setShoppingCategory(needingEventRequestDto.getShoppingCategory());
+                        log.info("Updating shopping category");
+                        log.info("A Needing event has been updated");
+                    }else{
+                        //save a new need
+                        createNeedingEvent(needingEventRequestDto, needingEvent, user, vendor);
+                        log.info("new Needing event has been created");
+                    }
                 }
-                needingEvent.setShoppingCategory(needingEventRequestDto.getShoppingCategory());
-                log.info("Updating shopping category");
-                log.info("A Needing event has been updated");
-
-            }else{//save a new needing event for the user
-                needingEvent.setUser(user.get());
-                needingEvent.setNeedingEventDateCreated(LocalDate.now());
-                needingEvent.setNeedNotes(needingEventRequestDto.getNeedNotes());
-                needingEvent.setPublicNeed(0);//By default, for a new need
-                needingEvent.setShoppingCategory(ShoppingCategory.valueOf(String.valueOf(needingEventRequestDto.getShoppingCategory())));
-                needingEvent.setItemNeeded(needingEventRequestDto.getItemNeeded());
-                needingEvent.setNeedingEventStatus(NeedingEventStatus.Need);
-                if(!needingEventRequestDto.getVendorName().isEmpty()) {
-                    updateVendor(needingEventRequestDto.getVendorName(), vendor, needingEvent);
-                }
+            } else {//save a new needing event for the user
+                createNeedingEvent(needingEventRequestDto, needingEvent, user, vendor);
                 log.info("new Needing event has been created");
             }
-            needingEventRepository.save(needingEvent);
-            log.info("...and saved...");
-                //populate the dto:
-            needingEventResponseDto.setItemNeededName(needingEvent.getItemNeeded());
-            needingEventResponseDto.setShoppingCategory(String.valueOf(needingEvent.getShoppingCategory()));
-            needingEventResponseDto.setDaysListed(getDaysListed(needingEvent.getNeedingEventDateCreated()));
-            needingEventResponseDto.setNeedNotes("");
-            needingEventResponseDto.setIsPublic(needingEvent.getPublicNeed());
-            needingEventResponseDto.setPotentialVendor(needingEvent.getVendor().getVendorName());
-            needingEventResponseDto.setNeedingEventStatus(String.valueOf(needingEvent.getNeedingEventStatus()));
-            needingEventResponseDto.setNeedingEventId(needingEvent.getNeedingEventId());
+            saveToDto(needingEvent, needingEventResponseDto);
         }
         return needingEventResponseDto;
+    }
+
+    private void createNeedingEvent(NeedingEventRequestDto needingEventRequestDto, NeedingEvent needingEvent, Optional<User> user, Optional<Vendor> vendor) {
+        if (user.isPresent()) {
+            needingEvent.setUser(user.get());
+            needingEvent.setNeedingEventDateCreated(LocalDate.now());
+            needingEvent.setNeedNotes(needingEventRequestDto.getNeedNotes());
+            needingEvent.setPublicNeed(0);//By default, for a new need
+            needingEvent.setShoppingCategory(ShoppingCategory.valueOf(String.valueOf(needingEventRequestDto.getShoppingCategory())));
+            needingEvent.setItemNeeded(needingEventRequestDto.getItemNeeded());
+            needingEvent.setNeedingEventStatus(NeedingEventStatus.Need);
+            if (!needingEventRequestDto.getVendorName().isEmpty()) {
+                updateVendor(needingEventRequestDto.getVendorName(), vendor, needingEvent);
+            }
+        }
+    }
+
+    private void saveToDto(NeedingEvent needingEvent, NeedingEventResponseDto needingEventResponseDto) {
+        needingEventRepository.save(needingEvent);
+        log.info("...and saved...");
+        //populate the dto:
+        needingEventResponseDto.setItemNeededName(needingEvent.getItemNeeded());
+        needingEventResponseDto.setShoppingCategory(String.valueOf(needingEvent.getShoppingCategory()));
+        needingEventResponseDto.setDaysListed(getDaysListed(needingEvent.getNeedingEventDateCreated()));
+        needingEventResponseDto.setNeedNotes("");
+        needingEventResponseDto.setIsPublic(needingEvent.getPublicNeed());
+        needingEventResponseDto.setPotentialVendor(needingEvent.getVendor().getVendorName());
+        needingEventResponseDto.setNeedingEventStatus(String.valueOf(needingEvent.getNeedingEventStatus()));
+        needingEventResponseDto.setNeedingEventId(needingEvent.getNeedingEventId());
     }
 
     private void updateVendor(String updatedVendorName, Optional<Vendor> vendor, NeedingEvent needingEvent) {
