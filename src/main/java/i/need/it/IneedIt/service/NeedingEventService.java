@@ -9,8 +9,8 @@ import i.need.it.IneedIt.model.Vendor;
 import i.need.it.IneedIt.repository.NeedingEventRepository;
 import i.need.it.IneedIt.repository.UserRepository;
 import i.need.it.IneedIt.repository.VendorRepository;
-import i.need.it.IneedIt.utils.MapUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -70,8 +70,8 @@ public class NeedingEventService {
                         needingEvent.setNeedingEventStatus(NeedingEventStatus.Need); //if the need had changed, it means it is in a needing status
 
                         // needingEvent.setNeedingEventDateCreated(LocalDate.now()); TODO: to enable when setting the toggle to need, the date need to be reset
-                        if (!needingEventRequestDto.getVendorName().isEmpty()) {
-                            updateVendor(needingEventRequestDto.getVendorName(), vendor, needingEvent);
+                        if (vendor.isPresent() && StringUtils.isNotEmpty(needingEventRequestDto.getVendorName())) {
+                            updateVendor(needingEventRequestDto.getVendorName(), vendor.get(), needingEvent);
                         }
                         needingEvent.setShoppingCategory(needingEventRequestDto.getShoppingCategory());
                         log.info("Updating shopping category");
@@ -100,8 +100,8 @@ public class NeedingEventService {
             needingEvent.setShoppingCategory(ShoppingCategory.valueOf(String.valueOf(needingEventRequestDto.getShoppingCategory())));
             needingEvent.setItemNeeded(needingEventRequestDto.getItemNeeded());
             needingEvent.setNeedingEventStatus(NeedingEventStatus.Need);
-            if (!needingEventRequestDto.getVendorName().isEmpty()) {
-                updateVendor(needingEventRequestDto.getVendorName(), vendor, needingEvent);
+            if (vendor .isPresent() && StringUtils.isNotEmpty(needingEventRequestDto.getVendorName())) {
+                updateVendor(needingEventRequestDto.getVendorName(), vendor.get(), needingEvent);
             }
         }
     }
@@ -120,10 +120,10 @@ public class NeedingEventService {
         needingEventResponseDto.setNeedingEventId(needingEvent.getNeedingEventId());
     }
 
-    private void updateVendor(String updatedVendorName, Optional<Vendor> vendor, NeedingEvent needingEvent) {
+    private void updateVendor(String updatedVendorName, Vendor vendor, NeedingEvent needingEvent) {
         log.info("Updating vendor: "+ updatedVendorName);
-        if (vendor.isPresent()) {
-            needingEvent.setVendor(vendor.get());
+        if (vendor != null) {
+            needingEvent.setVendor(vendor);
         } else {//add vendor to the vendor table
             VendorRequestDto newVendor = new VendorRequestDto();
             newVendor.setVendorName(updatedVendorName);
