@@ -56,7 +56,12 @@ public class NeedingEventController {
 
     @PostMapping(value="make-need-public")
     public ResponseEntity<HttpStatus> changeNeedPublicStatus(@RequestParam(value = "needing-event-id") String needingEventId){
-        return needingEventService.changeNeedPublicStatus(needingEventId);
+        boolean isUpdated = needingEventService.changeNeedPublicStatus(needingEventId);
+        if(isUpdated){
+            return new ResponseEntity<>(HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @PostMapping(value = "/add-update-vendor")

@@ -221,7 +221,7 @@ public class NeedingEventService {
        return  new ArrayList<ShoppingCategory>(EnumSet.allOf(ShoppingCategory.class));
     }
 
-    public Boolean deleteNeed(Long needingEventId) {
+    public boolean deleteNeed(Long needingEventId) {
         Optional<NeedingEvent> aNeedToBeDeleted = needingEventRepository.findById(needingEventId);
         if(aNeedToBeDeleted.isPresent()){
             needingEventRepository.delete(aNeedToBeDeleted.get());
@@ -245,7 +245,7 @@ public class NeedingEventService {
 
 
 
-    public ResponseEntity<HttpStatus> changeNeedPublicStatus(String needingEventId) {
+    public boolean changeNeedPublicStatus(String needingEventId) {
         Optional<NeedingEvent> needEventToUpdate = needingEventRepository.findById(Long.valueOf(needingEventId));
         if(needEventToUpdate.isPresent()){
             if(needEventToUpdate.get().getPublicNeed() == 0){
@@ -254,9 +254,9 @@ public class NeedingEventService {
                 needEventToUpdate.get().setPublicNeed(0);
             }
             needingEventRepository.save(needEventToUpdate.get());
-            return new ResponseEntity<>(HttpStatus.OK);
+            return true;
         }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        return false;
     }
 
     public List<PublicNeedsResponseDto> getAllPublicNeeds() {
