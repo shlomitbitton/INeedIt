@@ -83,7 +83,12 @@ public class NeedingEventController {
      */
     @PostMapping(value = "/update-needing-event-status")
     public ResponseEntity<HttpStatus> updateNeedingEventStatus(@RequestParam(value = "needing-event-id") String needingEventId){
-        return needingEventService.updateNeedingEventStatus(needingEventId);
+        boolean isUpdated = needingEventService.updateNeedingEventStatus(needingEventId);
+        if(isUpdated){
+            return ResponseEntity.ok().build();
+        }else{
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     /*
@@ -111,7 +116,12 @@ public class NeedingEventController {
 
     @PostMapping(value="/update-need-notes")
     public ResponseEntity<HttpStatus> updateNedNotes(@RequestBody UpdateNeedNotesDto updateNeedNotesDto){
-        return needingEventService.updateNeedNotes(updateNeedNotesDto);
+        boolean isUpdated = needingEventService.updateNeedNotes(updateNeedNotesDto);
+        if(isUpdated){
+            return new ResponseEntity<>(HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @GetMapping(value="/public-needs")

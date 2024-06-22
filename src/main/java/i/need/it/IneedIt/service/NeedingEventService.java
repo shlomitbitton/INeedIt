@@ -11,8 +11,6 @@ import i.need.it.IneedIt.repository.UserRepository;
 import i.need.it.IneedIt.repository.VendorRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -30,7 +28,7 @@ public class NeedingEventService {
     private final VendorRepository vendorRepository;
 
 
-    public ResponseEntity<HttpStatus> updateNeedingEventStatus(String needingEventId){
+    public boolean updateNeedingEventStatus(String needingEventId){
         Optional<NeedingEvent> needingEventToUpdate = needingEventRepository.findById(Long.valueOf(needingEventId));
         if(needingEventToUpdate.isPresent()){
             if(needingEventToUpdate.get().getNeedingEventStatus().equals(NeedingEventStatus.Need)){
@@ -41,15 +39,15 @@ public class NeedingEventService {
             }
             log.info("Needing event status {} has updated to {}", needingEventId, needingEventToUpdate.get().getNeedingEventStatus());
             needingEventRepository.save(needingEventToUpdate.get());
+            return true;
         }
-        return ResponseEntity.ok().build();
+        return false;
     }
 
     public NeedingEventService(NeedingEventRepository needingEventRepository, UserRepository userRepository, VendorRepository vendorRepository) {
         this.needingEventRepository = needingEventRepository;
         this.userRepository = userRepository;
         this.vendorRepository = vendorRepository;
-//        this.generateToken = generateToken;
     }
 
     public NeedingEventResponseDto createUpdateNeedingEvent(NeedingEventRequestDto needingEventRequestDto){
@@ -156,16 +154,6 @@ public class NeedingEventService {
                 //sortNeeds(listOfNeedingEventDtoPerUser, true, false);
     }
 
-    private List<NeedingEventResponseDto> structureNeedList(List<NeedingEventResponseDto> listOfNeedingEventDtoPerUser){
-
-        listOfNeedingEventDtoPerUser.sort(
-                Comparator.comparing(NeedingEventResponseDto::getNeedingEventStatus).reversed()
-                        .thenComparing(NeedingEventResponseDto::getItemNeededName)
-                        .thenComparing(NeedingEventResponseDto::getPotentialVendor)
-                        .thenComparing(NeedingEventResponseDto::getShoppingCategory));
-//                        .thenComparing(NeedingEventResponseDto::getDaysListed));
-        return listOfNeedingEventDtoPerUser;
-    }
 
     private List<NeedingEventResponseDto> sortNeeds(List<NeedingEventResponseDto> listOfNeedingEventDtoPerUser, boolean sortByVendor, boolean sortByCategory){
         if(sortByCategory){
@@ -233,14 +221,14 @@ public class NeedingEventService {
         }
     }
 
-    public ResponseEntity<HttpStatus> updateNeedNotes(UpdateNeedNotesDto updateNeedNotesDto) {
+    public boolean updateNeedNotes(UpdateNeedNotesDto updateNeedNotesDto) {
         Optional<NeedingEvent> needEventToUpdate = needingEventRepository.findById(updateNeedNotesDto.getNeedEventId());
         if(needEventToUpdate.isPresent()){
             needEventToUpdate.get().setNeedNotes(updateNeedNotesDto.getNeedNotes());
             needingEventRepository.save(needEventToUpdate.get());
-            return new ResponseEntity<>(HttpStatus.OK);
+            return true;
         }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        return false;
     }
 
 
