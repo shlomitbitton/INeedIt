@@ -3,6 +3,7 @@ package i.need.it.IneedIt.controller;
 import i.need.it.IneedIt.config.SecurityUtils;
 import i.need.it.IneedIt.dto.*;
 import i.need.it.IneedIt.enums.ShoppingCategory;
+import i.need.it.IneedIt.model.Vendor;
 import i.need.it.IneedIt.service.NeedingEventService;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -10,10 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 @Slf4j
 @RestController
@@ -63,8 +61,18 @@ public class NeedingEventController {
 
     @PostMapping(value = "/add-update-vendor")
     public ResponseEntity<HttpStatus> addUpdateVendor(@RequestBody VendorRequestDto vendorRequestDto){
-        return needingEventService.createNewVendor(vendorRequestDto);
+        if(vendorRequestDto.getVendorName() != null){
+            Vendor vendor = needingEventService.createNewVendor(vendorRequestDto);
+            if(vendor != null)   {
+                return new ResponseEntity<>(HttpStatus.CREATED);
+            }else{
+                return new ResponseEntity<>(HttpStatus.OK);
+            }
+        }else{
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
+
     /*
     updating needing event status
      */

@@ -54,7 +54,7 @@ public class NeedingEventService {
 
     public NeedingEventResponseDto createUpdateNeedingEvent(NeedingEventRequestDto needingEventRequestDto){
         Optional<User> user = userRepository.findUserByUserId(needingEventRequestDto.getUserId());
-        Optional<Vendor> vendor = vendorRepository.findByVendorNameIgnoreCase(needingEventRequestDto.getVendorName());
+//        Optional<Vendor> vendor = vendorRepository.findByVendorNameIgnoreCase(needingEventRequestDto.getVendorName());
         log.info("Vendor to update from request dto : "+needingEventRequestDto.getVendorName());
         NeedingEvent needingEvent = new NeedingEvent();
         NeedingEventResponseDto needingEventResponseDto = new NeedingEventResponseDto();
@@ -66,24 +66,28 @@ public class NeedingEventService {
                             .anyMatch(itemNeeded -> itemNeeded.getItemNeededName().equalsIgnoreCase(needingEventRequestDto.getItemNeeded()))) {
                         //in case  the needing status is changed,  recent date created.
                         long needingEventId = events.stream().filter(itemNeeded -> itemNeeded.getItemNeededName().equalsIgnoreCase(needingEventRequestDto.getItemNeeded())).findFirst().get().getNeedingEventId();
-                        needingEvent = needingEventRepository.findById(needingEventId).get();
+                        Optional<NeedingEvent> ne = needingEventRepository.findById(needingEventId);
+                        if(ne.isPresent()){
+                            needingEvent = ne.get();
+                        }
                         needingEvent.setNeedingEventStatus(NeedingEventStatus.Need); //if the need had changed, it means it is in a needing status
 
                         // needingEvent.setNeedingEventDateCreated(LocalDate.now()); TODO: to enable when setting the toggle to need, the date need to be reset
-                        if (vendor.isPresent() && StringUtils.isNotEmpty(needingEventRequestDto.getVendorName())) {
-                            updateVendor(needingEventRequestDto.getVendorName(), vendor.get(), needingEvent);
+                        if (StringUtils.isNotEmpty(needingEventRequestDto.getVendorName())) {
+                            updateVendor(needingEventRequestDto.getVendorName(), needingEvent);
                         }
                         needingEvent.setShoppingCategory(needingEventRequestDto.getShoppingCategory());
                         log.info("Updating shopping category");
                         log.info("A Needing event has been updated");
+                        break;
                     }else{
                         //save a new need
-                        createNeedingEvent(needingEventRequestDto, needingEvent, user, vendor);
+                        createNeedingEvent(needingEventRequestDto, needingEvent, user);
                         log.info("new Needing event has been created");
                     }
                 }
             } else {//save a new needing event for the user
-                createNeedingEvent(needingEventRequestDto, needingEvent, user, vendor);
+                createNeedingEvent(needingEventRequestDto, needingEvent, user);
                 log.info("new Needing event has been created");
             }
             saveToDto(needingEvent, needingEventResponseDto);
@@ -91,7 +95,7 @@ public class NeedingEventService {
         return needingEventResponseDto;
     }
 
-    private void createNeedingEvent(NeedingEventRequestDto needingEventRequestDto, NeedingEvent needingEvent, Optional<User> user, Optional<Vendor> vendor) {
+    private void createNeedingEvent(NeedingEventRequestDto needingEventRequestDto, NeedingEvent needingEvent, Optional<User> user) {
         if (user.isPresent()) {
             needingEvent.setUser(user.get());
             needingEvent.setNeedingEventDateCreated(LocalDate.now());
@@ -100,8 +104,8 @@ public class NeedingEventService {
             needingEvent.setShoppingCategory(ShoppingCategory.valueOf(String.valueOf(needingEventRequestDto.getShoppingCategory())));
             needingEvent.setItemNeeded(needingEventRequestDto.getItemNeeded());
             needingEvent.setNeedingEventStatus(NeedingEventStatus.Need);
-            if (vendor .isPresent() && StringUtils.isNotEmpty(needingEventRequestDto.getVendorName())) {
-                updateVendor(needingEventRequestDto.getVendorName(), vendor.get(), needingEvent);
+            if (StringUtils.isNotEmpty(needingEventRequestDto.getVendorName())) {
+                updateVendor(needingEventRequestDto.getVendorName(), needingEvent);
             }
         }
     }
@@ -120,15 +124,16 @@ public class NeedingEventService {
         needingEventResponseDto.setNeedingEventId(needingEvent.getNeedingEventId());
     }
 
-    private void updateVendor(String updatedVendorName, Vendor vendor, NeedingEvent needingEvent) {
-        log.info("Updating vendor: "+ updatedVendorName);
-        if (vendor != null) {
-            needingEvent.setVendor(vendor);
+    private void updateVendor(String vendorName, NeedingEvent needingEvent) {
+        Optional<Vendor> vendor = vendorRepository.findByVendorNameIgnoreCase(vendorName);
+        log.info("Updating vendor: "+ vendorName);
+        if (vendor.isPresent()) {
+            needingEvent.setVendor(vendor.get());
         } else {//add vendor to the vendor table
+            log.info("create a new vendor");
             VendorRequestDto newVendor = new VendorRequestDto();
-            newVendor.setVendorName(updatedVendorName);
-            createNewVendor(newVendor);
-            needingEvent.setVendor(vendorRepository.findByVendorNameIgnoreCase(updatedVendorName).get());//now it should be there TODO: refactor the double call to the db
+            newVendor.setVendorName(vendorName);
+            needingEvent.setVendor(createNewVendor(newVendor));
         }
     }
 
@@ -178,15 +183,15 @@ public class NeedingEventService {
         return needingEventRepository.streamAllItemsNeededByUserId();
     }
 
-    public ResponseEntity<HttpStatus> createNewVendor(VendorRequestDto vendorRequestDto){
+    public Vendor createNewVendor(VendorRequestDto vendorRequestDto){
         Optional<Vendor> vendor = vendorRepository.findByVendorNameIgnoreCase(vendorRequestDto.getVendorName());
         if(vendor.isEmpty()){
             Vendor newVendor = new Vendor();
             newVendor.setVendorName(vendorRequestDto.getVendorName());
             vendorRepository.save(newVendor);
-            return new ResponseEntity<>(HttpStatus.CREATED);
+            return newVendor;
         }
-        return new ResponseEntity<>(HttpStatus.OK);
+        return null;
     }
 
 //    @Transactional
