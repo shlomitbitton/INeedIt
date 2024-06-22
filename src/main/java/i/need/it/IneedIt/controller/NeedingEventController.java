@@ -97,7 +97,11 @@ public class NeedingEventController {
 
     @DeleteMapping(value="/delete-need/{needing-event-id}")
     public ResponseEntity<HttpStatus> deleteNeed(@PathVariable("needing-event-id") Long needingEventId){
-        return needingEventService.deleteNeed(needingEventId);
+        if(needingEventService.deleteNeed(needingEventId)){
+            return new ResponseEntity<>(HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @PostMapping(value="/update-need-notes")
