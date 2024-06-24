@@ -9,6 +9,6 @@
 - **Get Things Done!:** Stay on top of your tasks and see how quickly your projects are progressing.
 - **Adhere to your list and prevent unnecessary purchases**
 ---
-![ineedit_page2.png](src/main/resources/static/ineedit_page2.png)
-![ineedit_page1.png](src/main/resources/static/ineedit_page1.png)
+![ineedit_page2.png](src/main/resources/static/ineedit_page2.png)q
+![ineedit_page3.png](src/main/resources/static/ineedit_page3.png)
 
