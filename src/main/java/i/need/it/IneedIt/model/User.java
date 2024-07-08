@@ -48,10 +48,8 @@ public class User {
     private LocalDateTime dateCreated;
 
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch= FetchType.EAGER)
-    private List<NeedingEvent> userNeeds;
-
-
+    @OneToMany(mappedBy = "user")
+    private List<UserNeeds> userNeeds;
 
 
 

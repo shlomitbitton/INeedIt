@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 //this entity represent the needing event which includes the item product
@@ -56,10 +57,9 @@ public class NeedingEvent {
     @JoinColumn(name = "VENDOR_ID")
     private Vendor vendor;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "USER_ID")
-    @NotNull
-    private User user;
+
+    @OneToMany(mappedBy = "need")
+    private List<UserNeeds> userNeeds;//each userNeed record is showing the relationship between a need and the users.
 
 
 }

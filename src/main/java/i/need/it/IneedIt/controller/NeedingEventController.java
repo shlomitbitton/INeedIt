@@ -3,9 +3,9 @@ package i.need.it.IneedIt.controller;
 import i.need.it.IneedIt.config.SecurityUtils;
 import i.need.it.IneedIt.dto.*;
 import i.need.it.IneedIt.enums.ShoppingCategory;
+import i.need.it.IneedIt.model.NeedingEvent;
 import i.need.it.IneedIt.model.Vendor;
 import i.need.it.IneedIt.service.NeedingEventService;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +19,7 @@ import java.util.*;
 public class NeedingEventController {
 
     private final NeedingEventService needingEventService;
-    StatusResponseDto errorResponse = new StatusResponseDto(HttpStatus.FORBIDDEN.value(), "Access Denied");
+    private final StatusResponseDto errorResponse = new StatusResponseDto(HttpStatus.FORBIDDEN.value(), "Access Denied");
 
     public NeedingEventController(NeedingEventService needingEventService) {
         this.needingEventService = needingEventService;
@@ -83,13 +83,20 @@ public class NeedingEventController {
      */
     @PostMapping(value = "/update-needing-event-status")
     public ResponseEntity<HttpStatus> updateNeedingEventStatus(@RequestParam(value = "needing-event-id") String needingEventId){
-        boolean isUpdated = needingEventService.updateNeedingEventStatus(needingEventId);
+    Optional<NeedingEvent> needingEvent= needingEventService.getNeedingEventByNeedingEventId(needingEventId);
+    Object currentUserId = SecurityUtils.getCurrentUserId();
+    if(needingEvent.isPresent() && currentUserId != null
+            && needingEvent.get().getUserNeeds().stream().anyMatch(user->user.getUser().getUserId() == Long.parseLong(currentUserId.toString()))){
+        boolean isUpdated = needingEventService.updateNeedingEventStatus(needingEventId, needingEvent.get());
         if(isUpdated){
             return ResponseEntity.ok().build();
         }else{
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.notFound().build();
         }
     }
+    return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    }
+
 
     /*
     needing event by id
@@ -107,7 +114,8 @@ public class NeedingEventController {
 
     @DeleteMapping(value="/delete-need/{needing-event-id}")
     public ResponseEntity<HttpStatus> deleteNeed(@PathVariable("needing-event-id") Long needingEventId){
-        if(needingEventService.deleteNeed(needingEventId)){
+        Object currentUserId = SecurityUtils.getCurrentUserId();
+        if(currentUserId != null && needingEventService.deleteNeed(needingEventId, currentUserId.toString())){
             return new ResponseEntity<>(HttpStatus.OK);
         }else{
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

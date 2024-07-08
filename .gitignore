@@ -31,3 +31,15 @@ build/
 
 ### VS Code ###
 .vscode/
+src/main/java/i/need/it/IneedIt/config/WebSecurityConfig.java
+application.yaml
+application.yaml
+collections/allEndPoints.http
+src/main/java/i/need/it/IneedIt/config/WebSecurityConfig.java
+src/main/resources/client.crt
+src/main/resources/truststore.jks
+src/main/resources/server.p12
+src/main/resources/application.properties
+collections/http-client.env.json
+collections/allEndPoints.http
+src/main/java/i/need/it/IneedIt/enums/ShoppingCategory.java

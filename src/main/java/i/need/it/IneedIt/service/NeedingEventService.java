@@ -5,18 +5,24 @@ import i.need.it.IneedIt.enums.NeedingEventStatus;
 import i.need.it.IneedIt.enums.ShoppingCategory;
 import i.need.it.IneedIt.model.NeedingEvent;
 import i.need.it.IneedIt.model.User;
+import i.need.it.IneedIt.model.UserNeeds;
 import i.need.it.IneedIt.model.Vendor;
+import i.need.it.IneedIt.model.embeddable.UserNeedsId;
 import i.need.it.IneedIt.repository.NeedingEventRepository;
+import i.need.it.IneedIt.repository.UserNeedsRepository;
 import i.need.it.IneedIt.repository.UserRepository;
 import i.need.it.IneedIt.repository.VendorRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static java.lang.Long.parseLong;
 
 @Slf4j
 @Component
@@ -24,32 +30,40 @@ public class NeedingEventService {
 
     private final NeedingEventRepository needingEventRepository;
     private final UserRepository userRepository;
+    private final UserNeedsRepository userNeedsRepository;
 
     private final VendorRepository vendorRepository;
 
 
-    public boolean updateNeedingEventStatus(String needingEventId){
-        Optional<NeedingEvent> needingEventToUpdate = needingEventRepository.findById(Long.valueOf(needingEventId));
-        if(needingEventToUpdate.isPresent()){
-            if(needingEventToUpdate.get().getNeedingEventStatus().equals(NeedingEventStatus.Need)){
-                needingEventToUpdate.get().setNeedingEventStatus(NeedingEventStatus.Fulfilled);
-            }else{
-                needingEventToUpdate.get().setNeedingEventStatus(NeedingEventStatus.Need);
-                needingEventToUpdate.get().setNeedingEventDateCreated(LocalDate.now());//zero out the date created
-            }
-            log.info("Needing event status {} has updated to {}", needingEventId, needingEventToUpdate.get().getNeedingEventStatus());
-            needingEventRepository.save(needingEventToUpdate.get());
-            return true;
-        }
-        return false;
+    public Optional<NeedingEvent> getNeedingEventByNeedingEventId(String needingEventId){
+        return needingEventRepository.findById(parseLong(needingEventId));
     }
 
-    public NeedingEventService(NeedingEventRepository needingEventRepository, UserRepository userRepository, VendorRepository vendorRepository) {
+    public boolean updateNeedingEventStatus(String needingEventId, NeedingEvent needingEventToUpdate) {
+        if (needingEventToUpdate.getNeedingEventStatus().equals(NeedingEventStatus.Need)) {
+            needingEventToUpdate.setNeedingEventStatus(NeedingEventStatus.Fulfilled);
+        } else {
+            needingEventToUpdate.setNeedingEventStatus(NeedingEventStatus.Need);
+            needingEventToUpdate.setNeedingEventDateCreated(LocalDate.now());//zero out the date created
+        }
+        try {
+            log.info("Needing event status {} has updated to {}", needingEventId, needingEventToUpdate.getNeedingEventStatus());
+            needingEventRepository.save(needingEventToUpdate);
+        } catch (Exception exception) {
+            log.error("needing event was not updated");
+            return false;
+        }
+        return true;
+    }
+
+    public NeedingEventService(NeedingEventRepository needingEventRepository, UserRepository userRepository, UserNeedsRepository userNeedsRepository, VendorRepository vendorRepository) {
         this.needingEventRepository = needingEventRepository;
         this.userRepository = userRepository;
+        this.userNeedsRepository = userNeedsRepository;
         this.vendorRepository = vendorRepository;
     }
 
+    @Transactional
     public NeedingEventResponseDto createUpdateNeedingEvent(NeedingEventRequestDto needingEventRequestDto){
         Optional<User> user = userRepository.findUserByUserId(needingEventRequestDto.getUserId());
 //        Optional<Vendor> vendor = vendorRepository.findByVendorNameIgnoreCase(needingEventRequestDto.getVendorName());
@@ -57,11 +71,15 @@ public class NeedingEventService {
         NeedingEvent needingEvent = new NeedingEvent();
         NeedingEventResponseDto needingEventResponseDto = new NeedingEventResponseDto();
         if(user.isPresent()) {
-            Map<String, List<NeedingEventResponseDto>> useerHasNeeds = getUserNeedingEvents(String.valueOf(user.get().getUserId()));
-            if(!useerHasNeeds.isEmpty()) { //user has needs
-                for (List<NeedingEventResponseDto> events : useerHasNeeds.values()) {
-                    if (events.stream()
-                            .anyMatch(itemNeeded -> itemNeeded.getItemNeededName().equalsIgnoreCase(needingEventRequestDto.getItemNeeded()))) {
+            boolean itemHasFoundInUsersList = false;
+            Map<String, List<NeedingEventResponseDto>> userHasNeeds = getUserNeedingEvents(String.valueOf(user.get().getUserId()));
+            if(!userHasNeeds.isEmpty()) { //user has needs
+                for (List<NeedingEventResponseDto> events : userHasNeeds.values()) {//needs to iterate thoguh the entire events
+                    //find if the user has this need already
+                    itemHasFoundInUsersList = events.stream()
+                            .anyMatch(itemNeeded -> itemNeeded.getItemNeededName().equalsIgnoreCase(needingEventRequestDto.getItemNeeded()));
+                    if (itemHasFoundInUsersList) {//check if this item already exists
+                        log.info("this item {} already exists in the user list ", needingEventRequestDto.getItemNeeded());
                         //in case  the needing status is changed,  recent date created.
                         long needingEventId = events.stream().filter(itemNeeded -> itemNeeded.getItemNeededName().equalsIgnoreCase(needingEventRequestDto.getItemNeeded())).findFirst().get().getNeedingEventId();
                         Optional<NeedingEvent> ne = needingEventRepository.findById(needingEventId);
@@ -78,24 +96,46 @@ public class NeedingEventService {
                         log.info("Updating shopping category");
                         log.info("A Needing event has been updated");
                         break;
-                    }else{
-                        //save a new need
-                        createNeedingEvent(needingEventRequestDto, needingEvent, user);
-                        log.info("new Needing event has been created");
                     }
                 }
-            } else {//save a new needing event for the user
-                createNeedingEvent(needingEventRequestDto, needingEvent, user);
-                log.info("new Needing event has been created");
             }
+            if(userHasNeeds.isEmpty() || !itemHasFoundInUsersList) {//save a new needing event for the user
+                createNeedingEvent(needingEventRequestDto, needingEvent, user);
+                log.info("First needing event has been created");
+            }
+            needingEventRepository.save(needingEvent);
+            createUserNeedsRelationship(user.get(), needingEvent);
             saveToDto(needingEvent, needingEventResponseDto);
         }
         return needingEventResponseDto;
     }
 
+    protected void createUserNeedsRelationship(User user, NeedingEvent needingEvent){
+        List<UserNeeds> listOfUserNeedsRelationships= userNeedsRepository.findByUser(user);
+        for(UserNeeds un : listOfUserNeedsRelationships){
+            log.info(un.getNeed().getItemNeeded()+ " " + un.getNeed().getNeedingEventId());
+        }
+        Optional<UserNeeds> existingUserNeedRelation = listOfUserNeedsRelationships.stream().filter(need -> need.getNeed().getItemNeeded().equals(needingEvent.getItemNeeded())).findFirst();
+        if(existingUserNeedRelation.isEmpty()){ //relationship doesnt exists, create one
+            UserNeedsId userNeedsId = new UserNeedsId();
+            userNeedsId.setNeedId(needingEvent.getNeedingEventId());
+            userNeedsId.setUserId(user.getUserId());
+
+            UserNeeds userNeeds = new UserNeeds();
+            userNeeds.setUserNeedsId(userNeedsId);
+            userNeeds.setUser(user);
+            userNeeds.setNeed(needingEvent);
+
+            userNeedsRepository.save(userNeeds);
+            log.info("updated a new user-need relationship");
+        }else{
+            log.info("User Need Relationship already exist");
+        }
+    }
+
     private void createNeedingEvent(NeedingEventRequestDto needingEventRequestDto, NeedingEvent needingEvent, Optional<User> user) {
         if (user.isPresent()) {
-            needingEvent.setUser(user.get());
+//            needingEvent.setUserNeeds(user.get());
             needingEvent.setNeedingEventDateCreated(LocalDate.now());
             needingEvent.setNeedNotes(needingEventRequestDto.getNeedNotes());
             needingEvent.setPublicNeed(0);//By default, for a new need
@@ -109,8 +149,6 @@ public class NeedingEventService {
     }
 
     private void saveToDto(NeedingEvent needingEvent, NeedingEventResponseDto needingEventResponseDto) {
-        needingEventRepository.save(needingEvent);
-        log.info("...and saved...");
         //populate the dto:
         needingEventResponseDto.setItemNeededName(needingEvent.getItemNeeded());
         needingEventResponseDto.setShoppingCategory(String.valueOf(needingEvent.getShoppingCategory()));
@@ -124,9 +162,9 @@ public class NeedingEventService {
 
     private void updateVendor(String vendorName, NeedingEvent needingEvent) {
         Optional<Vendor> vendor = vendorRepository.findByVendorNameIgnoreCase(vendorName);
-        log.info("Updating vendor: "+ vendorName);
         if (vendor.isPresent()) {
             needingEvent.setVendor(vendor.get());
+            log.info("Updating exsiting vendor: "+ vendorName);
         } else {//add vendor to the vendor table
             log.info("create a new vendor");
             VendorRequestDto newVendor = new VendorRequestDto();
@@ -141,35 +179,36 @@ public class NeedingEventService {
     }
 
     public Map<String, List<NeedingEventResponseDto>> getUserNeedingEvents(String userId){
-            List<NeedingEvent> needingEventsPerUser = needingEventRepository.findAll().stream().filter(user -> user.getUser().getUserId() == Long.parseLong(userId)).toList();
 
+        List<UserNeeds> needingEventsPerUser = userNeedsRepository.findByUserId(parseLong(userId));//this gives the records which associated with that userId
         Map<String, List<NeedingEventResponseDto>> mapOfUserNeedingEventDtos = new HashMap<>();
-        for (NeedingEvent nepu : needingEventsPerUser) {
-            NeedingEventResponseDto nrdto = getNeedingEventById(String.valueOf(nepu.getNeedingEventId()));
+        for (UserNeeds nepu : needingEventsPerUser) {
+            NeedingEventResponseDto nrdto = getNeedingEventById(String.valueOf(nepu.getUserNeedsId().getNeedId()));
             List<NeedingEventResponseDto> list = mapOfUserNeedingEventDtos.computeIfAbsent(nrdto.getPotentialVendor(), k -> new ArrayList<>());
             list.add(nrdto);
             list.sort(Comparator.comparing(NeedingEventResponseDto::getItemNeededName, String.CASE_INSENSITIVE_ORDER));
         }
+
         return mapOfUserNeedingEventDtos;
                 //sortNeeds(listOfNeedingEventDtoPerUser, true, false);
     }
 
 
-    private List<NeedingEventResponseDto> sortNeeds(List<NeedingEventResponseDto> listOfNeedingEventDtoPerUser, boolean sortByVendor, boolean sortByCategory){
-        if(sortByCategory){
-            listOfNeedingEventDtoPerUser.sort(Comparator.comparing(NeedingEventResponseDto::getShoppingCategory)
-                    .thenComparing(NeedingEventResponseDto::getItemNeededName));
-        }
-        if(sortByVendor){
-            listOfNeedingEventDtoPerUser.sort(Comparator.comparing(NeedingEventResponseDto::getPotentialVendor)
-                    .thenComparing(NeedingEventResponseDto::getItemNeededName));
-        }
-        return listOfNeedingEventDtoPerUser;
-    }
+//    private List<NeedingEventResponseDto> sortNeeds(List<NeedingEventResponseDto> listOfNeedingEventDtoPerUser, boolean sortByVendor, boolean sortByCategory){
+//        if(sortByCategory){
+//            listOfNeedingEventDtoPerUser.sort(Comparator.comparing(NeedingEventResponseDto::getShoppingCategory)
+//                    .thenComparing(NeedingEventResponseDto::getItemNeededName));
+//        }
+//        if(sortByVendor){
+//            listOfNeedingEventDtoPerUser.sort(Comparator.comparing(NeedingEventResponseDto::getPotentialVendor)
+//                    .thenComparing(NeedingEventResponseDto::getItemNeededName));
+//        }
+//        return listOfNeedingEventDtoPerUser;
+//    }
 
-    public List<String> getAllNeedingEventsResponseDto(){
-        return needingEventRepository.streamAllItemsNeededByUserId();
-    }
+//    public List<String> getAllNeedingEventsResponseDto(){
+//        return needingEventRepository.streamAllItemsNeededByUserId();
+//    }
 
     public Vendor createNewVendor(VendorRequestDto vendorRequestDto){
         Optional<Vendor> vendor = vendorRepository.findByVendorNameIgnoreCase(vendorRequestDto.getVendorName());
@@ -182,7 +221,6 @@ public class NeedingEventService {
         return null;
     }
 
-//    @Transactional
     public NeedingEventResponseDto getNeedingEventById(String needingEventId) {
         NeedingEventResponseDto result = new NeedingEventResponseDto();
         log.info("Getting event Id: {}",needingEventId);
@@ -209,16 +247,22 @@ public class NeedingEventService {
        return  new ArrayList<ShoppingCategory>(EnumSet.allOf(ShoppingCategory.class));
     }
 
-    public boolean deleteNeed(Long needingEventId) {
-        Optional<NeedingEvent> aNeedToBeDeleted = needingEventRepository.findById(needingEventId);
-        if(aNeedToBeDeleted.isPresent()){
-            needingEventRepository.delete(aNeedToBeDeleted.get());
-            log.info("Need with id {} is being deleted", needingEventId);
-            return true;
-        }else{
-            log.info("No need found with id: {}", needingEventId);
-            return false;
-        }
+    public boolean deleteNeed(Long needingEventId, String userId) {
+            //look for the relatioship:
+            Optional<User> user = userRepository.findUserByUserId(Long.valueOf(userId));
+            if (user.isPresent()) {
+                Optional<UserNeeds> potentialNeedingEventRelatioshipExists = userNeedsRepository.findByUser(user.get()).stream().filter(n -> n.getNeed().getNeedingEventId() == needingEventId).findFirst();
+                potentialNeedingEventRelatioshipExists.ifPresent(userNeedsRepository::delete);
+                Optional<NeedingEvent> aNeedToBeDeleted = needingEventRepository.findById(needingEventId);
+                if (aNeedToBeDeleted.isPresent()) {
+                    needingEventRepository.delete(aNeedToBeDeleted.get());
+                    log.info("Need with id {} is being deleted", needingEventId);
+                    return true;
+                }
+            } else {
+                log.info("No need found with id: {}", needingEventId);
+            }
+        return false;
     }
 
     public boolean updateNeedNotes(UpdateNeedNotesDto updateNeedNotesDto) {
@@ -253,7 +297,21 @@ public class NeedingEventService {
                 .map(needingEventRepository::findById)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .map(needingEvent -> new PublicNeedsResponseDto(needingEvent.getNeedingEventId(), needingEvent.getItemNeeded()))
+                .map(needingEvent -> {
+                    // Safely get the first userId from userNeeds or provide a default value
+                    Optional<Long> firstUserIdOptional = needingEvent.getUserNeeds().stream()
+                            .map(u -> u.getUser().getUserId())
+                            .findFirst();
+                    // Use the userId if present, or use a default value (e.g., -1L)
+                    Long userId = firstUserIdOptional.orElse(-1L);//TODO: for now we will get only the first user owner and not the entire list
+                    // Create the DTO with safe or default values
+                    return new PublicNeedsResponseDto(
+                            needingEvent.getNeedingEventId(),
+                            needingEvent.getItemNeeded(),
+                            needingEvent.getNeedNotes(),
+                            userId
+                    );
+                })
                 .collect(Collectors.toList());
     }
 
